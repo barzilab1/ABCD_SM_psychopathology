@@ -23,6 +23,30 @@ mhy$pstr_ss_pr = NULL
 summary(mhy[mhy$eventname == "2_year_follow_up_y_arm_1" ,])
 
 
+library(data.table)
+setDT(mhy)
+mhy[,bully_vic:= peq_ss_relational_victim +peq_ss_reputation_victim +peq_ss_overt_victim]
+mhy[,bully_aggs:= peq_ss_relational_aggs+peq_ss_reputation_aggs+peq_ss_overt_aggression]
+
+mhy[,bully_vic_90_q:= {
+  prs_90_q = quantile(bully_vic, prob = seq(0, 1, length = 11), na.rm = T)["90%"]
+  fcase(
+    bully_vic > prs_90_q, 1,
+    bully_vic <= prs_90_q, 0,
+    default = NA)
+}]
+
+mhy[,bully_aggs_90_q:= {
+  prs_90_q = quantile(bully_aggs, prob = seq(0, 1, length = 11), na.rm = T)["90%"]
+  fcase(
+    bully_aggs > prs_90_q, 1,
+    bully_aggs <= prs_90_q, 0,
+    default = NA)
+}]
+
+mhy[,summary(.SD), .SDcols =c("bully_vic", "bully_aggs", "bully_vic_90_q", "bully_aggs_90_q")]
+
+
 ################### Youth Summary Scores BPM and POA ################### 
 yssbpm01 = load_instrument("abcd_yssbpm01", abcd_files_path)
 yssbpm01 = yssbpm01[,grepl("^(src|interv|event|sex)|_(r|t|mean|sum)$", colnames(yssbpm01))]

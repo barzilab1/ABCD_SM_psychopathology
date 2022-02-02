@@ -66,7 +66,7 @@ dataset_wide = merge(dataset_wide, geo_data_baseline)
 
 set.seed(131)
 library(data.table)
-one_family_member = setDT(dataset_wide)[, sample(src_subject_id, 1) ,by = rel_family_id]
+one_family_member = setDT(dataset_wide)[, .SD[sample(x = .N, size = 1)] ,by = rel_family_id]
 
 
 write.csv(file = "outputs/dataset_SGM.csv",x = dataset_wide, row.names = F, na = "")
