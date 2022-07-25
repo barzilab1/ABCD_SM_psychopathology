@@ -1,0 +1,87 @@
+---
+title: "Untitled"
+author: "Kate Tran"
+date: "7/19/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(qgraph)
+library(corrplot)
+library(Hmisc)
+```
+
+```{r}
+data_long <- read.csv("../outputs/dataset_SGM_long_mm.csv")
+```
+
+# Correlation plot
+```{r}
+cor_plot_function <- function(vars) {
+  cor = cor_auto(vars)
+  testRes = cor.mtest(vars, conf.level = 0.95)
+  plot <- corrplot(cor, p.mat = testRes$p, method = 'color', diag = FALSE, type = 'upper', #col = col,
+         sig.level = c(0.001, 0.01, 0.05), pch.cex = 0.4,
+         insig = 'label_sig', pch.col = 'grey20', order = 'original', tl.col = "black", tl.srt = 45, tl.cex = 0.35, cl.cex = 0.4, cl.ratio = 0.4)
+  return(plot)
+}
+```
+
+# Correlation at 1 year
+```{r}
+png("../plots/correlation_1y.png", units="in", width=3, height=2.2, res=320)
+vars_1y <-
+  data_long %>% filter(eventname == 1) %>%
+  dplyr::select(
+    age = age_year,
+    sex = sex_br,
+    `White race` = race_white,
+    `Black race` = race_black,
+    `Hispanic ethinicity` = ethnicity_hisp,
+    `household income` = income_resid,
+    SGM = LGBT_inclusive,
+    `discrimination - sexual orientation` = dim_yesno_q3,
+    `structural bias against SGM` = reshist_state_so_factor,
+    `discrimination - race` = dim_yesno_q1,
+    `discrimination - country` = dim_yesno_q2,
+    `discrimination - weight` = dim_yesno_q4,
+    # `cyber bullied` = cybb_phenx_harm,
+    # `bully victim` = bully_vic,
+    ADI = reshist_addr1_adi_perc
+  )
+
+cor_plot_function(vars_1y)
+dev.off()
+```
+
+# Correlation at 2 year
+```{r}
+png("../plots/correlation_2y.png", units="in", width=3, height=2.2, res=320)
+vars_2y <-
+  data_long %>% filter(eventname == 2) %>%
+  dplyr::select(
+    age = age_year,
+    sex = sex_br,
+    `White race` = race_white,
+    `Black race` = race_black,
+    `Hispanic ethinicity` = ethnicity_hisp,
+    `household income` = income_resid,
+    SGM = LGBT_inclusive,
+    `discrimination - sexual orientation` = dim_yesno_q3,
+    `structural bias against SGM` = reshist_state_so_factor,
+    `discrimination - race` = dim_yesno_q1,
+    `discrimination - country` = dim_yesno_q2,
+    `discrimination - weight` = dim_yesno_q4,
+    # `cyber bullied` = cybb_phenx_harm,
+    # `bully victim` = bully_vic,
+    ADI = reshist_addr1_adi_perc
+  )
+
+cor_plot_function(vars_2y)
+dev.off()
+```

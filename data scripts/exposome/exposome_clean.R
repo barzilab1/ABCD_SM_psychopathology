@@ -10,21 +10,6 @@ ydmes01 = droplevels(ydmes01)
 
 summary(ydmes01[ydmes01$eventname == "2_year_follow_up_y_arm_1",])
 
-
-################### TRAUMA ################### 
-#abcd_ptsd01
-ptsd01 = load_instrument("abcd_ptsd01",abcd_files_path)
-
-
-########### Youth Neighborhood Safety/Crime ########### 
-nsc01 = load_instrument("abcd_nsc01",abcd_files_path)
-
-
-########### Parent Neighborhood Safety/Crime ########### 
-pnsc01 = load_instrument("abcd_pnsc01",abcd_files_path)
-pnsc01 = pnsc01[, !(colnames(pnsc01) %in% c("nei_p_select_language___1"))]
-
-
 ########### Youth Life Events ###########
 yle01 = load_instrument("abcd_yle01",abcd_files_path)
 
@@ -51,11 +36,7 @@ lpksad01$kbi_p_c_bully_l[lpksad01$kbi_p_c_bully_l == 2] = 0
 
 
 
-########### merge all tables
-exposome_set = merge(ydmes01,ptsd01, all = T)
-exposome_set = merge(exposome_set,nsc01, all = T)
-exposome_set = merge(exposome_set,yle01, all = T)
-exposome_set = merge(exposome_set,pnsc01, all = T)
+exposome_set = merge(ydmes01,yle01, all = T)
 exposome_set = merge(exposome_set,cb, all = T)
 exposome_set = merge(exposome_set,lpksad01, all = T)
 

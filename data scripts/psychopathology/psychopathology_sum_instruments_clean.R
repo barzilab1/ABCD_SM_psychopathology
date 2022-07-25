@@ -1,4 +1,4 @@
-
+library(data.table)
 source("config.R")
 source("utility_fun.R")
 
@@ -6,7 +6,7 @@ source("utility_fun.R")
 cbcls01 = load_instrument("abcd_cbcls01",abcd_files_path)
 
 #get the t scores
-cbcls_t_score = cbcls01[, grepl("^(src|interview|event|sex)|nal_t$", colnames(cbcls01))]
+cbcls_t_score = cbcls01[, grepl("^(src|interview|event|sex)|_t$|_r$", colnames(cbcls01))]
 
 summary(cbcls_t_score[cbcls_t_score$eventname == "2_year_follow_up_y_arm_1",]) 
 
@@ -23,7 +23,7 @@ mhy$pstr_ss_pr = NULL
 summary(mhy[mhy$eventname == "2_year_follow_up_y_arm_1" ,])
 
 
-library(data.table)
+
 setDT(mhy)
 mhy[,bully_vic:= peq_ss_relational_victim +peq_ss_reputation_victim +peq_ss_overt_victim]
 mhy[,bully_aggs:= peq_ss_relational_aggs+peq_ss_reputation_aggs+peq_ss_overt_aggression]

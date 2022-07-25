@@ -17,6 +17,8 @@ demographics_set[demographics_set == 777 | demographics_set == 999] = NA
 demographics_set = data.table(demographics_set)
 
 ########### sex
+# Fix sex of NDAR_INV3Z5E0931
+demographics_set$sex[demographics_set$src_subject_id == "NDAR_INV3Z5E0931"] <- "F"
 #convert the NIH sex at birth (equal to demo_sex_v2)
 demographics_set[, sex_br := (sex == "F")*1]
 demographics_set[,demo_sex_v2 := NULL]
@@ -148,12 +150,12 @@ demographics_set[demo_roster_v2 %in% c(60,77), demo_roster_v2:= NA]
 
 
 
-selected_features = c("src_subject_id", "sex",
+selected_features = c("src_subject_id", "sex", "age", "gender", 
                       "race_white", "race_black", "race_aian", "race_nhpi", "race_asian", "race_other","race_mixed" ,"ethnicity_hisp",
-                      "non_hispanic_black", "non_hispanic_white",
+                      "non_hispanic_black", "non_hispanic_white", "parents_avg_edu", "household_income",
                       "born_in_usa", "sex_br")
 
-write.csv(file = "outputs/demographics_baseline.csv",x = demographics_set[,.SD,.SDcols = selected_features], row.names=F, na = "")
+write.csv(file = "outputs/demographics_baseline.csv", x = demographics_set[,.SD,.SDcols = selected_features], row.names=F, na = "")
 
 
 

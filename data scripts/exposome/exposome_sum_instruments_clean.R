@@ -18,26 +18,7 @@ colnames(sscey01)[colnames(sscey01) == "srpf_y_ss_iiss"] = "positive_school_invo
 
 summary(droplevels(sscey01))
 
-
-########### Summary Scores Brief Problem Monitor-Teacher Form for Ages 6-18 ########### 
-ssbpmtf = load_instrument("abcd_ssbpmtf01",abcd_files_path)
-ssbpmtf = ssbpmtf[, !grepl("_(nm|nt)$", colnames(ssbpmtf))]
-
-
-
-########### Sum Scores Mobil Tech Youth ########### 
-ssmty = load_instrument("abcd_ssmty01",abcd_files_path)
-
-ssmty = ssmty[, grepl("(src|interview|event|sex)|_(weekend|weekday)$", colnames(ssmty))]
-
-summary(ssmty)
-
-
-########### merge all tables
-exposome_set = merge(ssbpmtf,sscey01)
-exposome_set = merge(exposome_set,ssmty)
-
-write.csv(file = "outputs/exposome_sum_set.csv",x = exposome_set, row.names = F, na = "")
+write.csv(file = "outputs/exposome_sum_set.csv",x = sscey01, row.names = F, na = "")
 
 
 

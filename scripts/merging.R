@@ -1,79 +1,86 @@
+# Create long dataset for mixed models (2 timepoints: 1y and 2y)
 library(readr)
+library(dplyr)
+library(plyr)
 
 
-demographics_baseline <- read_csv("outputs/demographics_baseline.csv")
 family <- read_csv("outputs/family.csv")
-genetic <- read_csv("outputs/genetic.csv")
 site <- read_csv("outputs/site.csv")
-
-demographics_long <- read_csv("outputs/demographics_long.csv")
-BMI <- read_csv("outputs/ABCD_BMI.csv")
 exposome_set <- read.csv("outputs/exposome_set.csv")
 exposome_sum_set <- read_csv("outputs/exposome_sum_set.csv")
 externalize_dataset <- read_csv("outputs/externalize_dataset.csv")
 geo_data <- read_csv("outputs/geo_data.csv")
-hormone_saliva <- read_csv("outputs/hormone_saliva.csv")
 ksad_y_diagnosis <- read_csv("outputs/ksad_y_diagnosis.csv")
 physicalhealth_sum <- read_csv("outputs/physicalhealth_sum.csv")
-physicalhealth <- read_csv("outputs/physicalhealth.csv")
 psychopathology <- read_csv("outputs/psychopathology.csv")
 psychopathology_sum <- read_csv("outputs/psychopathology_sum_scores.csv")
 suicide_set <- read_csv("outputs/suicide_set.csv")
 
+demographics_baseline <- read.csv("outputs/demographics_baseline.csv") %>% 
+  mutate(eventname = "baseline_year_1_arm_1")
+demographics_long <- read.csv("outputs/demographics_long.csv")
 
-ksad_y_ed <- read_csv("outputs/ksad_y_ed.csv")
-ksad_p_other <- read_csv("outputs/ksad_p_other.csv")
+demo_race = demographics_baseline[,grep("src|race|hisp", colnames(demographics_baseline))]
 
-
-dataset = merge(demographics_long, BMI, all = T)
-dataset = merge(dataset, exposome_set, all = T)
-dataset = merge(dataset, exposome_sum_set, all = T)
-dataset = merge(dataset, externalize_dataset, all = T)
-dataset = merge(dataset, geo_data, all = T)
-dataset = merge(dataset, hormone_saliva, all = T)
-dataset = merge(dataset, ksad_y_diagnosis, all = T)
-dataset = merge(dataset, physicalhealth_sum, all = T)
-dataset = merge(dataset, physicalhealth, all = T)
-dataset = merge(dataset, psychopathology, all = T)
-dataset = merge(dataset, psychopathology_sum, all = T)
-dataset = merge(dataset, suicide_set, all = T)
-dataset = merge(dataset, site, all = T)
-
-dataset = merge(dataset, ksad_y_ed, all = T)
-dataset = merge(dataset, ksad_p_other, all = T)
+demographics_long = merge(demographics_long, demo_race)
+demographics_long = demographics_long[demographics_long$eventname != "baseline_year_1_arm_1",]
+demographics = rbind.fill(demographics_baseline, demographics_long)
 
 
+dataset <- merge(exposome_set, exposome_sum_set, all = T)
+dataset <- merge(dataset, externalize_dataset, all = T)
+dataset <- merge(dataset, ksad_y_diagnosis, all = T)
+dataset <- merge(dataset, physicalhealth_sum, all = T)
+dataset <- merge(dataset, psychopathology, all = T)
+dataset <- merge(dataset, psychopathology_sum, all = T)
+dataset <- merge(dataset, suicide_set, all = T)
+dataset <- merge(dataset, site, all = T)
+
+dataset_3tp <- dataset[dataset$eventname %in% c("baseline_year_1_arm_1", "1_year_follow_up_y_arm_1", "2_year_follow_up_y_arm_1"),]
+
+dataset <- merge(dataset, demographics_long, all = T)
+
+geo_data_baseline = geo_data[geo_data$eventname == "baseline_year_1_arm_1", grep("src|reshist_state_[^m]|reshist_addr1_adi_perc", colnames(geo_data), value = T)]
 
 # keep only relevant timepoints
-dataset = dataset[dataset$eventname %in% c("1_year_follow_up_y_arm_1","2_year_follow_up_y_arm_1"),]
+dataset <- dataset[dataset$eventname %in% c("1_year_follow_up_y_arm_1","2_year_follow_up_y_arm_1"),]
+dataset <- dataset[,colSums(is.na(dataset)) != nrow(dataset)]
+
+dataset_long <- merge(dataset, demographics_baseline, all.x = T)
+dataset_long <- merge(dataset_long, family[,c("src_subject_id", "sex", "rel_family_id")], all.x = T)
+dataset_long <- merge(dataset_long, geo_data_baseline)
 
 
-# new variable to use in reshape from long to wide format
-dataset$timepoint = regmatches(dataset$eventname, regexpr(".*_year", dataset$eventname))
-dataset$eventname = NULL
-dataset$demo_prim_l = NULL
-dataset_wide = reshape(dataset, direction = "wide", idvar = c("src_subject_id", "sex", "sex_br"), timevar = "timepoint", sep = "_")
+write.csv(file = "outputs/dataset_SGM_3tp.csv", x = dataset_3tp, row.names = F, na = "")
+write.csv(file = "outputs/dataset_SGM_long.csv", x = dataset_long, row.names = F, na = "")
 
-dataset_wide = dataset_wide[,colSums(is.na(dataset_wide)) != nrow(dataset_wide)]
+# Create data for mixed models 
+dataset_long <- dataset_long %>% 
+  mutate(eventname = recode(eventname, 
+                            `1_year_follow_up_y_arm_1` = "1",
+                            `2_year_follow_up_y_arm_1` = "2"),
+         age_year = age/12)
 
-dataset_wide = merge(demographics_baseline, dataset_wide, all.y = T)
-dataset_wide = merge(dataset_wide, family[,c("src_subject_id", "sex", "rel_family_id")] , all.x= T)
-dataset_wide = merge(dataset_wide, genetic , all.x= T)
+dataset_long$SI_y <- as.factor(dataset_long$SI_y)
+dataset_long$SA_y <- as.factor(dataset_long$SA_y)
 
+# replace parent education - 2y as 1y
+edu_2y <- dataset_long %>% filter(eventname == "1") %>% 
+  dplyr::select(src_subject_id, parents_avg_edu) %>% 
+  rename(parents_avg_edu_2y = "parents_avg_edu") %>% 
+  mutate(eventname = "2")
 
-geo_data_baseline = geo_data[geo_data$eventname == "baseline_year_1_arm_1", grep("src|sex|reshist_state_[^m]", colnames(geo_data), value = T)]
-dataset_wide = merge(dataset_wide, geo_data_baseline)
+dataset_long <- dataset_long %>% 
+  left_join(edu_2y) %>% 
+  mutate(parents_avg_edu = coalesce(parents_avg_edu, parents_avg_edu_2y)) %>% 
+  dplyr::select(-parents_avg_edu_2y)
 
-set.seed(131)
-library(data.table)
-one_family_member = setDT(dataset_wide)[, .SD[sample(x = .N, size = 1)] ,by = rel_family_id]
+# Regressed out ADI from household income # Create residuals of househ old income
+dataset_long <- add_residuals(data = dataset_long,
+                              model = lm(scale(household_income) ~ reshist_addr1_adi_perc, data = dataset_long),
+                              var = "income_resid")
 
-
-write.csv(file = "outputs/dataset_SGM.csv",x = dataset_wide, row.names = F, na = "")
-write.csv(file = "outputs/one_family_member.csv",x = one_family_member, row.names = F, na = "")
-
-
-
+write.csv(file = "outputs/dataset_SGM_long_mm.csv", x = dataset_long, row.names = F, na = "")
 
 
 

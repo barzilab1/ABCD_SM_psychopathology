@@ -81,7 +81,7 @@ selected_features = c("src_subject_id", "interview_date", "interview_age", "demo
                       "age", "sex_br", "gender", "demo_ed_v2_l", 
                       economic_hardship_names, "demo_fam_poverty")
 
-write.csv(file = "outputs/demographics_long.csv",x = demographics_set[,.SD,.SDcols = selected_features], row.names=F, na = "")
+write.csv(file = "outputs/demographics_long.csv", x = demographics_set[,.SD,.SDcols = selected_features], row.names=F, na = "")
 
 
 
