@@ -23,16 +23,15 @@ library(scales)
 
 # Create data
 ```{r}
-data_long <- read_csv("../outputs/dataset_SGM_long.csv") %>% 
-  mutate(eventname = recode(eventname, 
-                            `1_year_follow_up_y_arm_1` = "1y",
-                            `2_year_follow_up_y_arm_1` = "2y"))
+
+
+data_long <- read_csv("../outputs/dataset_SGM_long_mm.csv") 
 
 # Add a cut off for reshist_state_so_factor at 10%
 data_long <- data_long %>% 
   mutate(reshist_state_so_factor_at10 = 
-           case_when(reshist_state_so_factor > (quantile(data_long$reshist_state_so_factor, probs = 0.9, na.rm = T) %>% nth(1)) ~ 1,
-                     reshist_state_so_factor <= (quantile(data_long$reshist_state_so_factor, probs = 0.9, na.rm = T) %>% nth(1)) ~ 0,
+           case_when(reshist_state_so_factor > (quantile(data_long$reshist_state_so_factor, probs = 0.9, na.rm = T) ) ~ 1,
+                     reshist_state_so_factor <= (quantile(data_long$reshist_state_so_factor, probs = 0.9, na.rm = T) ) ~ 0,
                      TRUE ~ NA_real_))
 ```
 
@@ -48,18 +47,19 @@ data_wide <- data_long %>%
 data_wide <- data_wide %>% 
   rowwise() %>% 
   # mean BPM
-  mutate(bpm_y_scr_totalprob_t_mean = mean(c(bpm_y_scr_totalprob_t_1y, bpm_y_scr_totalprob_t_2y), na.rm = T),
+  mutate(bpm_y_scr_totalprob_t_mean = mean(c(bpm_y_scr_totalprob_t_1, bpm_y_scr_totalprob_t_2), na.rm = T),
          # mean CBCL
-         cbcl_scr_syn_totprob_t_mean = mean(c(cbcl_scr_syn_totprob_t_1y, cbcl_scr_syn_totprob_t_2y), na.rm = T),
+         cbcl_scr_syn_totprob_t_mean = mean(c(cbcl_scr_syn_totprob_t_1, cbcl_scr_syn_totprob_t_2), na.rm = T),
          # discrimination
-         dim_yesno_q3_ever = case_when(dim_yesno_q3_1y == 1 | dim_yesno_q3_2y == 1 ~ 1,
-                                       (dim_yesno_q3_1y == 0 | dim_yesno_q3_2y == 0) &
-                                         (dim_yesno_q3_1y != 1 & dim_yesno_q3_2y != 1) ~ 0,
+         dim_yesno_q3_ever = case_when(dim_yesno_q3_1 == 1 | dim_yesno_q3_2 == 1 ~ 1,
+                                       (dim_yesno_q3_1 == 0 | dim_yesno_q3_2 == 0) &
+                                         # no need to check for 1, first case already checked that 
+                                         (dim_yesno_q3_1 != 1 & dim_yesno_q3_2 != 1) ~ 0,
                                        TRUE ~ NA_real_),
          
-         LGBT_inclusive_ever = case_when(LGBT_inclusive_1y == 1 | LGBT_inclusive_2y == 1 ~ 1,
-                                         (LGBT_inclusive_1y == 0 | LGBT_inclusive_2y == 0) &
-                                           (LGBT_inclusive_1y != 1 & LGBT_inclusive_2y != 1) ~ 0,
+         LGBT_inclusive_ever = case_when(LGBT_inclusive_1 == 1 | LGBT_inclusive_2 == 1 ~ 1,
+                                         (LGBT_inclusive_1 == 0 | LGBT_inclusive_2 == 0) &
+                                           (LGBT_inclusive_1 != 1 & LGBT_inclusive_2 != 1) ~ 0,
                                          TRUE ~ NA_real_))
 
 data_wide$SA_y_ever <- apply(data_wide[,grepl("SA_y", colnames(data_wide))],1 ,function(x) {any(x == 1)*1})
@@ -137,7 +137,7 @@ plot_1 <- ggplot(plot_bpm_at10, aes(x = reshist_state_so_factor_at10,
   annotate("segment", x = 1, xend = 2, y = 61.5, yend = 61.5, size = 0.22) +
   scale_y_continuous(limits=c(40, 62), oob = rescale_none)
 
-ggsave("../plots/BMP_state", width = 5, height = 4)
+ggsave(filename = "../plots/BMP_state.png", width = 5, height = 4)
 ```
 
 ## Individual

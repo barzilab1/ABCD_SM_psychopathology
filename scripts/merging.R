@@ -1,7 +1,7 @@
 # Create long dataset for mixed models (2 timepoints: 1y and 2y)
 library(readr)
 library(dplyr)
-library(plyr)
+library(modelr)
 
 
 family <- read_csv("outputs/family.csv")
@@ -16,15 +16,16 @@ psychopathology <- read_csv("outputs/psychopathology.csv")
 psychopathology_sum <- read_csv("outputs/psychopathology_sum_scores.csv")
 suicide_set <- read_csv("outputs/suicide_set.csv")
 
-demographics_baseline <- read.csv("outputs/demographics_baseline.csv") %>% 
-  mutate(eventname = "baseline_year_1_arm_1")
+demographics_baseline <- read.csv("outputs/demographics_baseline.csv")
 demographics_long <- read.csv("outputs/demographics_long.csv")
 
+
+# combine the demographics to one dataset
 demo_race = demographics_baseline[,grep("src|race|hisp", colnames(demographics_baseline))]
 
 demographics_long = merge(demographics_long, demo_race)
 demographics_long = demographics_long[demographics_long$eventname != "baseline_year_1_arm_1",]
-demographics = rbind.fill(demographics_baseline, demographics_long)
+demographics = bind_rows(demographics_baseline, demographics_long)
 
 
 dataset <- merge(exposome_set, exposome_sum_set, all = T)
@@ -35,26 +36,23 @@ dataset <- merge(dataset, psychopathology, all = T)
 dataset <- merge(dataset, psychopathology_sum, all = T)
 dataset <- merge(dataset, suicide_set, all = T)
 dataset <- merge(dataset, site, all = T)
+dataset <- merge(dataset, demographics, all =T )
 
-dataset_3tp <- dataset[dataset$eventname %in% c("baseline_year_1_arm_1", "1_year_follow_up_y_arm_1", "2_year_follow_up_y_arm_1"),]
+dataset <- dataset[!dataset$eventname %in% c("3_year_follow_up_y_arm_1"),]
 
-dataset <- merge(dataset, demographics_long, all = T)
 
 geo_data_baseline = geo_data[geo_data$eventname == "baseline_year_1_arm_1", grep("src|reshist_state_[^m]|reshist_addr1_adi_perc", colnames(geo_data), value = T)]
 
-# keep only relevant timepoints
-dataset <- dataset[dataset$eventname %in% c("1_year_follow_up_y_arm_1","2_year_follow_up_y_arm_1"),]
-dataset <- dataset[,colSums(is.na(dataset)) != nrow(dataset)]
-
-dataset_long <- merge(dataset, demographics_baseline, all.x = T)
-dataset_long <- merge(dataset_long, family[,c("src_subject_id", "sex", "rel_family_id")], all.x = T)
-dataset_long <- merge(dataset_long, geo_data_baseline)
+dataset <- merge(dataset, family[,c("src_subject_id", "sex", "rel_family_id")], all.x = T)
+dataset <- merge(dataset, geo_data_baseline)
 
 
-write.csv(file = "outputs/dataset_SGM_3tp.csv", x = dataset_3tp, row.names = F, na = "")
-write.csv(file = "outputs/dataset_SGM_long.csv", x = dataset_long, row.names = F, na = "")
+write.csv(file = "outputs/dataset_SGM_3tp.csv", x = dataset, row.names = F, na = "")
+
 
 # Create data for mixed models 
+dataset_long <- dataset[dataset$eventname %in% c("1_year_follow_up_y_arm_1","2_year_follow_up_y_arm_1"),]
+dataset_long <- dataset_long[,colSums(is.na(dataset_long)) != nrow(dataset_long)]
 dataset_long <- dataset_long %>% 
   mutate(eventname = recode(eventname, 
                             `1_year_follow_up_y_arm_1` = "1",

@@ -14,51 +14,35 @@ knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
 library(tidyr)
 library(janitor)
-library(plyr)
 library(tableone)
 library(data.table)
 ```
 
 ```{r}
-demographics_baseline <- read.csv("../outputs/demographics_baseline.csv") %>% 
-  mutate(eventname = "baseline_year_1_arm_1")
-
-demographics_long <- read.csv("../outputs/demographics_long.csv")
-
-demo_race = demographics_baseline[,grep("src|race|hisp", colnames(demographics_baseline))]
-
-demographics_long = merge(demographics_long, demo_race)
-demographics_long = demographics_long[demographics_long$eventname != "baseline_year_1_arm_1",]
-demographics = rbind.fill(demographics_baseline, demographics_long)
-```
-
-```{r}
-externalize_ksad_p <- read.csv("../outputs/externalize_ksad_symptoms_p.csv") %>% dplyr::select(contains(c("src", "eventname", "symptoms")))
-externalize_diagnosis_p <- read.csv("../outputs/externalize_ksad_diagnosis_p.csv") %>% dplyr::select(contains(c("src", "eventname", "iagnosis")))
-ksad_y_diagnosis <- read.csv("../outputs/ksad_y_diagnosis.csv") %>% dplyr::select(contains(c("src", "eventname", "iagnosis")))
 
 dataset_long <- read.csv("../outputs/dataset_SGM_3tp.csv") %>% dplyr::select(-contains("interview"))
 
-geo_data <- read.csv("../outputs/geo_data.csv") %>% filter(eventname == "baseline_year_1_arm_1") %>% dplyr::select(-eventname)
+geo_data <- read.csv("../outputs/geo_data.csv") %>% filter(eventname == "baseline_year_1_arm_1") %>% dplyr::select(-contains(c("eventname","interview","sex")))
 site <- read.csv("../outputs/site.csv") %>% filter(eventname == "1_year_follow_up_y_arm_1") %>% dplyr::select(contains(c("src", "site")))
 family_id <- read.csv("../outputs/family.csv") %>% dplyr::select(contains(c("src", "family")))
 
 dataset_long <- dataset_long %>% 
-  left_join(demographics) %>% 
   mutate(eventname = recode(eventname, 
                             `1_year_follow_up_y_arm_1` = "1y",
                             `2_year_follow_up_y_arm_1` = "2y",
                             baseline_year_1_arm_1 = "bl"),
-         
-         age_year = age/12) %>% 
-  left_join(externalize_ksad_p) %>% 
-  left_join(externalize_diagnosis_p) %>% 
-  left_join(ksad_y_diagnosis)
+          age_year = age/12) 
+
 
 # table S1
-write.csv(print(CreateTableOne(data = dataset_long, strata = "eventname", vars = c("age_year", "kbi_y_sex_orient", "kbi_y_trans_id", "LGBT", "LGBT_inclusive"),
-               factorVars = c("kbi_y_sex_orient", "kbi_y_trans_id", "LGBT", "LGBT_inclusive"))), "../outputs/table_S1.csv")
+write.csv(print(CreateTableOne(data = dataset_long, strata = "eventname", addOverall = T,
+                               vars = c("age_year", "kbi_y_sex_orient", "kbi_y_trans_id", "LGBT", "LGBT_inclusive"),
+                               factorVars = c("kbi_y_sex_orient", "kbi_y_trans_id", "LGBT", "LGBT_inclusive")),
+                missing = T), 
+          "../outputs/table_S1.csv")
+```
 
+```{r}
 dataset_long <- dataset_long %>% 
   dplyr::select(
     # demographics
@@ -78,17 +62,15 @@ dataset_long <- dataset_long %>%
     bpm_y_scr_totalprob_r, bpm_y_scr_totalprob_t, cbcl_scr_syn_totprob_r, cbcl_scr_syn_totprob_t,
     LGBT_inclusive, LGBT
   )
-```
 
-```{r}
 # Wide data
 dataset_wide <- dataset_long %>% 
   pivot_wider(names_from = eventname, values_from = age_year:LGBT, names_sep = "_") %>% 
   # remove empty columns
-  remove_empty(., which = "cols")
+  remove_empty("cols")
 
 # Remove duplicated src_subject_id
-dataset_wide <- setDT(dataset_wide)[, lapply(.SD, na.omit), by = src_subject_id]
+# dataset_wide <- setDT(dataset_wide)[, lapply(.SD, na.omit), by = src_subject_id]
 
 dataset_wide <- dataset_wide %>% 
   left_join(geo_data) %>% 

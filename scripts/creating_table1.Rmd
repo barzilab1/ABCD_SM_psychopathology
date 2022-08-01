@@ -126,24 +126,16 @@ dataset_wide$diagnosis_ptsd_y_ever <- ifelse((is.na(dataset_wide$diagnosis_ptsd_
                                             0, dataset_wide$diagnosis_ptsd_y_ever)
 
 dataset_wide$ksads_ADHD_symptoms_sum_mean <- rowMeans(dataset_wide[,which(grepl("ksads_ADHD_symptoms_sum", colnames(dataset_wide)))], na.rm = T)
-
 dataset_wide$ksads_ADHD_exclude_attention_symptoms_sum_mean <- 
   rowMeans(dataset_wide[,which(grepl("ksads_ADHD_exclude_attention_symptoms_sum", colnames(dataset_wide)))], na.rm = T)
-
 dataset_wide$ksads_ODD_symptoms_sum_mean <- rowMeans(dataset_wide[,which(grepl("ksads_ODD_symptoms_sum", colnames(dataset_wide)))], na.rm = T)
-
-dataset_wide$ksads_ODD_symptoms_sum_mean <- rowMeans(dataset_wide[,which(grepl("ksads_ODD_symptoms_sum", colnames(dataset_wide)))], na.rm = T)
-
 dataset_wide$ksads_CONDUCT_symptoms_sum_mean <- rowMeans(dataset_wide[,which(grepl("ksads_CONDUCT_symptoms_sum", colnames(dataset_wide)))], na.rm = T)
-
 dataset_wide$ksads_externalizing_symptoms_sum_mean <- rowMeans(dataset_wide[,which(grepl("ksads_externalizing_symptoms_sum", colnames(dataset_wide)))], na.rm = T)
-
 dataset_wide$ksads_externalizing_exclude_attentation_symptoms_sum_mean <- 
   rowMeans(dataset_wide[,which(grepl("ksads_externalizing_exclude_attentation_symptoms_sum", colnames(dataset_wide)))], na.rm = T)
 
 dataset_wide$ksads_ptsd_symptoms_summary_mean <- rowMeans(dataset_wide[,which(grepl("ksads_ptsd_symptoms_summary", colnames(dataset_wide)))], na.rm = T)
 
-dataset_wide$ksads_ptsd_symptoms_summary_mean <- as.numeric(dataset_wide$ksads_ptsd_symptoms_summary_mean)
 ```
 
 # Table 1
@@ -212,7 +204,9 @@ write.csv(print(
 tableone::CreateTableOne(
     data = dataset_wide,
     vars = vars_main,
-    # strata = "LGBT_inclusive_ever",
+    strata = "LGBT_inclusive_ever",
+    addOverall = T,
+    includeNA = T,
     factorVars = c(
       "sex_br",
       "race_white",
@@ -232,7 +226,10 @@ tableone::CreateTableOne(
        "SI_y_ever",
       "SA_y_ever"
     )
-)),
+), 
+missing = T,
+pDigits = 7
+),
 "../outputs/table1_main_total_071922.csv")
 
 # Missing values
