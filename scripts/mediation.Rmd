@@ -35,8 +35,8 @@ dataset_wide$LGBT_inclusive_ever_2tp = ifelse( (is.na(dataset_wide$LGBT_inclusiv
                                                   0, dataset_wide$LGBT_inclusive_ever_2tp)
 
 
-dataset_wide$SA_y_ever <- apply(dataset_wide[,grepl("SA_y", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-dataset_wide$SI_y_ever <- apply(dataset_wide[,grepl("SI_y", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
+# dataset_wide$SA_y_ever <- apply(dataset_wide[,grepl("SA_y", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
+# dataset_wide$SI_y_ever <- apply(dataset_wide[,grepl("SI_y", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
 ```
 
 # Mediation
@@ -58,7 +58,7 @@ totaleffect := c + a1*b1 + a2*b2
 
 med_mod_bpm_y_2Ms_long <- sem(mod_bpm_y_2Ms_long, data = dataset_wide, se = "bootstrap", bootstrap = 500)
 
-standardizedSolution(med_mod_bpm_y_2Ms_long, type = "std.lv")
+standardizedSolution(med_mod_bpm_y_2Ms_long, type = "std.lv") %>% htmlTable::htmlTable()
 
 plot_mod_bpm_y_2Ms_long <- lavaanPlot(
   model = med_mod_bpm_y_2Ms_long,
@@ -162,7 +162,7 @@ totaleffect := c + a1*b1 + a2*b2
 
 med_mod_SI_2Ms_long <- sem(mod_SI_2Ms_long, data = dataset_wide, se = "bootstrap", bootstrap = 500)
 
-standardizedSolution(med_mod_SI_2Ms_long, type = "std.all")
+standardizedSolution(med_mod_SI_2Ms_long, type = "std.all") %>% htmlTable::htmlTable()
 
 plot_mod_SI_2Ms_long <- lavaanPlot(
   model = med_mod_SI_2Ms_long,
