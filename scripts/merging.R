@@ -1,4 +1,3 @@
-# Create long dataset for mixed models (2 timepoints: 1y and 2y)
 library(readr)
 library(dplyr)
 library(modelr)
@@ -50,7 +49,7 @@ dataset <- merge(dataset, geo_data_baseline)
 write.csv(file = "outputs/dataset_SGM_3tp.csv", x = dataset, row.names = F, na = "")
 
 
-# Create data for mixed models 
+# Create data for mixed models (at 1-year and 2-year follow-up)
 dataset_long <- dataset[dataset$eventname %in% c("1_year_follow_up_y_arm_1","2_year_follow_up_y_arm_1"),]
 dataset_long <- dataset_long[,colSums(is.na(dataset_long)) != nrow(dataset_long)]
 dataset_long <- dataset_long %>% 
