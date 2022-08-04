@@ -50,8 +50,6 @@ vars_1y <-
     `discrimination - race` = dim_yesno_q1,
     `discrimination - country` = dim_yesno_q2,
     `discrimination - weight` = dim_yesno_q4,
-    # `cyber bullied` = cybb_phenx_harm,
-    # `bully victim` = bully_vic,
     ADI = reshist_addr1_adi_perc
   )
 
@@ -77,8 +75,6 @@ vars_2y <-
     `discrimination - race` = dim_yesno_q1,
     `discrimination - country` = dim_yesno_q2,
     `discrimination - weight` = dim_yesno_q4,
-    # `cyber bullied` = cybb_phenx_harm,
-    # `bully victim` = bully_vic,
     ADI = reshist_addr1_adi_perc
   )
 
