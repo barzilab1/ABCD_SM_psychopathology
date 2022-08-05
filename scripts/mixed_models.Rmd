@@ -38,25 +38,6 @@ bpm_mod_2 <- lmer(bpm_y_scr_totalprob_t ~ LGBT_inclusive + dim_yesno_q3 + scale(
                     race_black + ethnicity_hisp + scale(income_resid) +
                     (1 | site_id_l_br/rel_family_id/src_subject_id), data = dataset_long)
 
-# bpm_mod_3 <- lmer(bpm_y_scr_totalprob_t ~ LGBT_inclusive + dim_yesno_q3 + scale(reshist_state_so_factor) + scale(age_year) + (scale(age_year)^2) + sex_br + race_white + 
-#                     race_black + ethnicity_hisp + scale(income_resid) +
-#                     dim_yesno_q1 + dim_yesno_q2 + dim_yesno_q4 + cybb_phenx_harm + bully_vic + 
-#                     (1 | site_id_l_br/rel_family_id/src_subject_id), data = dataset_long,
-#                   control=lmerControl(check.nobs.vs.nlev = "ignore",
-#                                       check.nobs.vs.rankZ = "ignore",
-#                                       check.nobs.vs.nRE="ignore",
-#                                       optimizer = "bobyqa", optCtrl = list(maxfun = 2e5)))
-# 
-# bpm_mod_4 <- lmer(bpm_y_scr_totalprob_t ~ LGBT_inclusive + dim_yesno_q3 + scale(reshist_state_so_factor) + scale(age_year) + (scale(age_year)^2) + sex_br + race_white + 
-#                     race_black + ethnicity_hisp + scale(income_resid) +
-#                     dim_yesno_q1 + dim_yesno_q2 + dim_yesno_q4 + cybb_phenx_harm + bully_vic + 
-#                     dim_yesno_q3*LGBT_inclusive + dim_yesno_q3*scale(reshist_state_so_factor) + scale(reshist_state_so_factor)*LGBT_inclusive +
-#                     (1 | site_id_l_br/rel_family_id/src_subject_id), data = dataset_long,
-#                   control=lmerControl(check.nobs.vs.nlev = "ignore",
-#                                       check.nobs.vs.rankZ = "ignore",
-#                                       check.nobs.vs.nRE="ignore",
-#                                       optimizer = "bobyqa", optCtrl = list(maxfun = 2e5)))
-
 bpm_mod_5 <- lmer(bpm_y_scr_totalprob_t ~ LGBT_inclusive + dim_yesno_q3 + scale(reshist_state_so_factor) + scale(age_year) + (scale(age_year)^2) + sex_br + race_white +
                     race_black + ethnicity_hisp + scale(income_resid) +
                     dim_yesno_q1 + dim_yesno_q2 + dim_yesno_q4 + cybb_phenx_harm + bully_vic + reshist_addr1_adi_perc +
@@ -76,7 +57,7 @@ bpm_mod_6 <- lmer(bpm_y_scr_totalprob_t ~ LGBT_inclusive + dim_yesno_q3 + scale(
                                       check.nobs.vs.nRE="ignore",
                                       optimizer = "bobyqa", optCtrl = list(maxfun = 2e5)))
 
-bpm_comb <- tab_model(bpm_mod_1, bpm_mod_2, bpm_mod_5, bpm_mod_6) #
+bpm_comb <- tab_model(bpm_mod_1, bpm_mod_2, bpm_mod_5, bpm_mod_6, show.intercept = F) #
 bpm_comb
 ```
 
@@ -90,25 +71,6 @@ cbcl_mod_1 <- lmer(cbcl_scr_syn_totprob_t ~ LGBT_inclusive + scale(age_year) + (
 cbcl_mod_2 <- lmer(cbcl_scr_syn_totprob_t ~ LGBT_inclusive + dim_yesno_q3 + scale(reshist_state_so_factor) + scale(age_year) + (scale(age_year)^2) + sex_br + race_white + 
                     race_black + ethnicity_hisp + scale(income_resid) +
                     (1 | site_id_l_br/rel_family_id/src_subject_id), data = dataset_long)
-
-# cbcl_mod_3 <- lmer(cbcl_scr_syn_totprob_t ~ LGBT_inclusive + dim_yesno_q3 + scale(reshist_state_so_factor) + scale(age_year) + (scale(age_year)^2) + sex_br + race_white + 
-#                      race_black + ethnicity_hisp + scale(income_resid) +
-#                      dim_yesno_q1 + dim_yesno_q2 + dim_yesno_q4 + cybb_phenx_harm + bully_vic + 
-#                      (1 | site_id_l_br/rel_family_id/src_subject_id), data = dataset_long,
-#                    control=lmerControl(check.nobs.vs.nlev = "ignore",
-#                                        check.nobs.vs.rankZ = "ignore",
-#                                        check.nobs.vs.nRE="ignore",
-#                                        optimizer = "bobyqa", optCtrl = list(maxfun = 2e5))) # not converge
-# 
-# cbcl_mod_4 <- lmer(cbcl_scr_syn_totprob_t ~ LGBT_inclusive + dim_yesno_q3 + scale(reshist_state_so_factor) + scale(age_year) + (scale(age_year)^2) + sex_br + race_white + 
-#                      race_black + ethnicity_hisp + scale(income_resid) +
-#                      dim_yesno_q1 + dim_yesno_q2 + dim_yesno_q4 + cybb_phenx_harm + bully_vic + 
-#                      dim_yesno_q3*LGBT_inclusive + dim_yesno_q3*scale(reshist_state_so_factor) + scale(reshist_state_so_factor)*LGBT_inclusive +
-#                      (1 | site_id_l_br/rel_family_id/src_subject_id), data = dataset_long,
-#                    control=lmerControl(check.nobs.vs.nlev = "ignore",
-#                                        check.nobs.vs.rankZ = "ignore",
-#                                        check.nobs.vs.nRE="ignore",
-#                                        optimizer = "bobyqa", optCtrl = list(maxfun = 2e5)))
 
 cbcl_mod_5 <- lmer(cbcl_scr_syn_totprob_t ~ LGBT_inclusive + dim_yesno_q3 + scale(reshist_state_so_factor) + scale(age_year) + (scale(age_year)^2) + sex_br + race_white +
                     race_black + ethnicity_hisp + scale(income_resid) +
@@ -130,7 +92,7 @@ cbcl_mod_6 <- lmer(cbcl_scr_syn_totprob_t ~ LGBT_inclusive + dim_yesno_q3 + scal
                                       optimizer = "bobyqa", optCtrl = list(maxfun = 2e5)))
 
 
-cbcl_comb <- tab_model(cbcl_mod_1, cbcl_mod_2, cbcl_mod_5, cbcl_mod_6)
+cbcl_comb <- tab_model(cbcl_mod_1, cbcl_mod_2, cbcl_mod_5, cbcl_mod_6, show.intercept = F)
 cbcl_comb
 ```
 
@@ -147,18 +109,6 @@ SI_mod_2 <- glmer(SI_y ~ LGBT_inclusive + dim_yesno_q3 + scale(reshist_state_so_
                     (1 | site_id_l_br/rel_family_id/src_subject_id), data = dataset_long, family = binomial, nAGQ = 0)
 
 
-# SI_mod_3 <- glmer(SI_y ~ LGBT_inclusive + dim_yesno_q3 + scale(reshist_state_so_factor) + scale(age_year) + (scale(age_year)^2) + sex_br + race_white + 
-#                     race_black + ethnicity_hisp + scale(income_resid) +
-#                     dim_yesno_q1 + dim_yesno_q2 + dim_yesno_q4 + cybb_phenx_harm + bully_vic + 
-#                     (1 | site_id_l_br/rel_family_id/src_subject_id), data = dataset_long, family = binomial, nAGQ = 0)
-# 
-# 
-# SI_mod_4 <- glmer(SI_y ~ LGBT_inclusive + dim_yesno_q3 + scale(reshist_state_so_factor) + scale(age_year) + (scale(age_year)^2) + sex_br + race_white + 
-#                     race_black + ethnicity_hisp + scale(income_resid) +
-#                     dim_yesno_q1 + dim_yesno_q2 + dim_yesno_q4 + cybb_phenx_harm + bully_vic + 
-#                     dim_yesno_q3*LGBT_inclusive + dim_yesno_q3*scale(reshist_state_so_factor) + scale(reshist_state_so_factor)*LGBT_inclusive +
-#                     (1 | site_id_l_br/rel_family_id/src_subject_id), data = dataset_long, family = binomial, nAGQ = 0)
-
 SI_mod_5 <- glmer(SI_y ~ LGBT_inclusive + dim_yesno_q3 + scale(reshist_state_so_factor) + scale(age_year) + (scale(age_year)^2) + sex_br + race_white +
                     race_black + ethnicity_hisp + scale(income_resid) +
                     dim_yesno_q1 + dim_yesno_q2 + dim_yesno_q4 + cybb_phenx_harm + bully_vic + reshist_addr1_adi_perc +
@@ -171,7 +121,7 @@ SI_mod_6 <- glmer(SI_y ~ LGBT_inclusive + dim_yesno_q3 + scale(reshist_state_so_
                     (1 | site_id_l_br/rel_family_id/src_subject_id), data = dataset_long, family = binomial, nAGQ = 0)
 
 
-SI_comb <- tab_model(SI_mod_1, SI_mod_2, SI_mod_5, SI_mod_6)
+SI_comb <- tab_model(SI_mod_1, SI_mod_2, SI_mod_5, SI_mod_6, show.intercept = F)
 SI_comb
 ```
 
@@ -188,18 +138,6 @@ SA_mod_2 <- glmer(SA_y ~ LGBT_inclusive + dim_yesno_q3 + scale(reshist_state_so_
                     (1 | site_id_l_br/rel_family_id/src_subject_id), data = dataset_long, family = binomial, nAGQ = 0)
 
 
-# SA_mod_3 <- glmer(SA_y ~ LGBT_inclusive + dim_yesno_q3 + scale(reshist_state_so_factor) + scale(age_year) + (scale(age_year)^2) + sex_br + race_white + 
-#                     race_black + ethnicity_hisp + scale(income_resid) +
-#                     dim_yesno_q1 + dim_yesno_q2 + dim_yesno_q4 + cybb_phenx_harm + bully_vic + 
-#                     (1 | site_id_l_br/rel_family_id/src_subject_id), data = dataset_long, family = binomial, nAGQ = 0)
-# 
-# 
-# SA_mod_4 <- glmer(SA_y ~ LGBT_inclusive + dim_yesno_q3 + scale(reshist_state_so_factor) + scale(age_year) + (scale(age_year)^2) + sex_br + race_white + 
-#                     race_black + ethnicity_hisp + scale(income_resid) +
-#                     dim_yesno_q1 + dim_yesno_q2 + dim_yesno_q4 + cybb_phenx_harm + bully_vic + 
-#                     dim_yesno_q3*LGBT_inclusive + dim_yesno_q3*scale(reshist_state_so_factor) + scale(reshist_state_so_factor)*LGBT_inclusive +
-#                     (1 | site_id_l_br/rel_family_id/src_subject_id), data = dataset_long, family = binomial, nAGQ = 0)
-
 SA_mod_5 <- glmer(SA_y ~ LGBT_inclusive + dim_yesno_q3 + scale(reshist_state_so_factor) + scale(age_year) + (scale(age_year)^2) + sex_br + race_white +
                     race_black + ethnicity_hisp + scale(income_resid) +
                     dim_yesno_q1 + dim_yesno_q2 + dim_yesno_q4 + cybb_phenx_harm + bully_vic + reshist_addr1_adi_perc +
@@ -212,7 +150,7 @@ SA_mod_6 <- glmer(SA_y ~ LGBT_inclusive + dim_yesno_q3 + scale(reshist_state_so_
                     (1 | site_id_l_br/rel_family_id/src_subject_id), data = dataset_long, family = binomial, nAGQ = 0)
 
 
-SA_comb <- tab_model(SA_mod_1, SA_mod_2, SA_mod_5, SA_mod_6)
+SA_comb <- tab_model(SA_mod_1, SA_mod_2, SA_mod_5, SA_mod_6, show.intercept = F)
 SA_comb
 ```
 
