@@ -28,9 +28,9 @@ dataset_wide <- read_csv("../outputs/dataset_SGM_wide_3tp.csv")
 # Create ever variables
 ```{r}
 # LGBT_inclusive: ever baseline or 1y
-dataset_wide$LGBT_inclusive_ever_2tp <- apply(dataset_wide[,grepl("LGBT_inclusive_bl|LGBT_inclusive_1y", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
+dataset_wide$LGBT_inclusive_ever_2tp <- apply(dataset_wide[,grepl("LGBT_inclusive_bl|LGBT_inclusive_1", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
 dataset_wide$LGBT_inclusive_ever_2tp = ifelse( (is.na(dataset_wide$LGBT_inclusive_ever_2tp) & 
-                                                     (apply(dataset_wide[,which(grepl("LGBT_inclusive_bl|LGBT_inclusive_1y", colnames(dataset_wide)))], 1, 
+                                                     (apply(dataset_wide[,which(grepl("LGBT_inclusive_bl|LGBT_inclusive_1", colnames(dataset_wide)))], 1, 
                                                             function(x) {any(x == 0)}))), 
                                                   0, dataset_wide$LGBT_inclusive_ever_2tp)
 
@@ -42,15 +42,15 @@ dataset_wide$LGBT_inclusive_ever_2tp = ifelse( (is.na(dataset_wide$LGBT_inclusiv
 # Mediation
 ```{r}
 # check correlation
-cor_auto(dataset_wide %>% dplyr::select(dim_yesno_q3_1y, reshist_state_so_factor)) # not high # no correlation in mediation
+cor_auto(dataset_wide %>% dplyr::select(dim_yesno_q3_1, reshist_state_so_factor)) # not high # no correlation in mediation
 ```
 
 ```{r}
 set.seed(060822)
 mod_bpm_y_2Ms_long <- '
-dim_yesno_q3_1y ~ a1*LGBT_inclusive_ever_2tp + scale(age_year_2y) + sex_br + race_black + race_white + ethnicity_hisp + scale(household_income_2y)
-reshist_state_so_factor ~ a2*LGBT_inclusive_ever_2tp + scale(age_year_2y) + sex_br + race_black + race_white + ethnicity_hisp + scale(household_income_2y)
-bpm_y_scr_totalprob_t_2y ~ b1*dim_yesno_q3_1y + b2*reshist_state_so_factor + c*LGBT_inclusive_ever_2tp + scale(age_year_2y) + sex_br + race_black + race_white + ethnicity_hisp + scale(household_income_2y)
+dim_yesno_q3_1 ~ a1*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp + scale(household_income_2)
+reshist_state_so_factor ~ a2*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp + scale(household_income_2)
+bpm_y_scr_totalprob_t_2 ~ b1*dim_yesno_q3_1 + b2*reshist_state_so_factor + c*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp + scale(household_income_2)
 indirecteffectdiscrim := a1*b1
 indirecteffectstate := a2*b2
 totaleffect := c + a1*b1 + a2*b2
@@ -83,9 +83,9 @@ summary(med_mod_bpm_y_2Ms_long, standardized=T, rsquare=T)
 ```{r}
 set.seed(060822)
 mod_cbcl_t_2Ms_long <- '
-dim_yesno_q3_1y ~ a1*LGBT_inclusive_ever_2tp + scale(age_year_2y) + sex_br + race_black + race_white + ethnicity_hisp + scale(household_income_2y)
-reshist_state_so_factor ~ a2*LGBT_inclusive_ever_2tp + scale(age_year_2y) + sex_br + race_black + race_white + ethnicity_hisp + scale(household_income_2y)
-cbcl_scr_syn_totprob_t_2y ~ b1*dim_yesno_q3_1y + b2*reshist_state_so_factor + c*LGBT_inclusive_ever_2tp + scale(age_year_2y) + sex_br + race_black + race_white + ethnicity_hisp + scale(household_income_2y)
+dim_yesno_q3_1 ~ a1*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp + scale(household_income_2)
+reshist_state_so_factor ~ a2*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp + scale(household_income_2)
+cbcl_scr_syn_totprob_t_2 ~ b1*dim_yesno_q3_1 + b2*reshist_state_so_factor + c*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp + scale(household_income_2)
 indirecteffectdiscrim := a1*b1
 indirecteffectstate := a2*b2
 totaleffect := c + a1*b1 + a2*b2
@@ -93,7 +93,7 @@ totaleffect := c + a1*b1 + a2*b2
 
 med_mod_cbcl_t_2Ms_long <- sem(mod_cbcl_t_2Ms_long, data = dataset_wide, se = "bootstrap", bootstrap = 500)
 
-standardizedSolution(med_mod_cbcl_t_2Ms_long, type = "std.lv")
+standardizedSolution(med_mod_cbcl_t_2Ms_long, type = "std.lv") %>% htmlTable::htmlTable()
 
 plot_mod_cbcl_t_2Ms_long <- lavaanPlot(
   model = med_mod_cbcl_t_2Ms_long,
@@ -117,9 +117,9 @@ summary(med_mod_cbcl_t_2Ms_long)
 ```{r}
 set.seed(060822)
 mod_SA_2Ms_long <- '
-dim_yesno_q3_1y ~ a1*LGBT_inclusive_ever_2tp + scale(age_year_2y) + sex_br + race_black + race_white + ethnicity_hisp  + scale(household_income_2y)
-reshist_state_so_factor ~ a2*LGBT_inclusive_ever_2tp + scale(age_year_2y) + sex_br + race_black + race_white + ethnicity_hisp  + scale(household_income_2y)
-SA_y_2y ~ b1*dim_yesno_q3_1y + b2*reshist_state_so_factor + c*LGBT_inclusive_ever_2tp + scale(age_year_2y) + sex_br + race_black + race_white + ethnicity_hisp  + scale(household_income_2y)
+dim_yesno_q3_1 ~ a1*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp  + scale(household_income_2)
+reshist_state_so_factor ~ a2*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp  + scale(household_income_2)
+SA_y_2 ~ b1*dim_yesno_q3_1 + b2*reshist_state_so_factor + c*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp  + scale(household_income_2)
 indirecteffectdiscrim := a1*b1
 indirecteffectstate := a2*b2
 totaleffect := c + a1*b1 + a2*b2
@@ -127,7 +127,7 @@ totaleffect := c + a1*b1 + a2*b2
 
 med_mod_SA_2Ms_long <- sem(mod_SA_2Ms_long, data = dataset_wide, se = "bootstrap", bootstrap = 500)
 
-standardizedSolution(med_mod_SA_2Ms_long, type = "std.all")
+standardizedSolution(med_mod_SA_2Ms_long, type = "std.all") %>% htmlTable::htmlTable()
 
 plot_mod_SA_2Ms_long <- lavaanPlot(
   model = med_mod_SA_2Ms_long,
@@ -152,9 +152,9 @@ summary(med_mod_SA_2Ms_long)
 ```{r}
 set.seed(060822)
 mod_SI_2Ms_long <- '
-dim_yesno_q3_1y ~ a1*LGBT_inclusive_ever_2tp + scale(age_year_2y) + sex_br + race_black + race_white + ethnicity_hisp  + scale(household_income_2y)
-reshist_state_so_factor ~ a2*LGBT_inclusive_ever_2tp + scale(age_year_2y) + sex_br + race_black + race_white + ethnicity_hisp  + scale(household_income_2y)
-SI_y_2y ~ b1*dim_yesno_q3_1y + b2*reshist_state_so_factor + c*LGBT_inclusive_ever_2tp + scale(age_year_2y) + sex_br + race_black + race_white + ethnicity_hisp  + scale(household_income_2y)
+dim_yesno_q3_1 ~ a1*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp  + scale(household_income_2)
+reshist_state_so_factor ~ a2*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp  + scale(household_income_2)
+SI_y_2 ~ b1*dim_yesno_q3_1 + b2*reshist_state_so_factor + c*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp  + scale(household_income_2)
 indirecteffectdiscrim := a1*b1
 indirecteffectstate := a2*b2
 totaleffect := c + a1*b1 + a2*b2
