@@ -15,6 +15,7 @@ library(tidyr)
 library(stats)
 library(readxl)
 library(jstable)
+library(tableone)
 ```
 
 # Read data
@@ -128,14 +129,17 @@ dataset_wide$diagnosis_ptsd_y_ever <- ifelse((is.na(dataset_wide$diagnosis_ptsd_
 dataset_wide$ksads_ADHD_symptoms_sum_mean <- rowMeans(dataset_wide[,which(grepl("ksads_ADHD_symptoms_sum", colnames(dataset_wide)))], na.rm = T)
 dataset_wide$ksads_ADHD_exclude_attention_symptoms_sum_mean <- 
   rowMeans(dataset_wide[,which(grepl("ksads_ADHD_exclude_attention_symptoms_sum", colnames(dataset_wide)))], na.rm = T)
+
 dataset_wide$ksads_ODD_symptoms_sum_mean <- rowMeans(dataset_wide[,which(grepl("ksads_ODD_symptoms_sum", colnames(dataset_wide)))], na.rm = T)
+
 dataset_wide$ksads_CONDUCT_symptoms_sum_mean <- rowMeans(dataset_wide[,which(grepl("ksads_CONDUCT_symptoms_sum", colnames(dataset_wide)))], na.rm = T)
+
 dataset_wide$ksads_externalizing_symptoms_sum_mean <- rowMeans(dataset_wide[,which(grepl("ksads_externalizing_symptoms_sum", colnames(dataset_wide)))], na.rm = T)
+
 dataset_wide$ksads_externalizing_exclude_attentation_symptoms_sum_mean <- 
   rowMeans(dataset_wide[,which(grepl("ksads_externalizing_exclude_attentation_symptoms_sum", colnames(dataset_wide)))], na.rm = T)
 
 dataset_wide$ksads_ptsd_symptoms_summary_mean <- rowMeans(dataset_wide[,which(grepl("ksads_ptsd_symptoms_summary", colnames(dataset_wide)))], na.rm = T)
-
 ```
 
 # Table 1
@@ -143,7 +147,7 @@ dataset_wide$ksads_ptsd_symptoms_summary_mean <- rowMeans(dataset_wide[,which(gr
 # Main table 1
 vars_main <- dataset_wide %>% 
   dplyr::select(
-    age_year_2y,
+    age_year_2,
     sex_br,
     race_white,
     race_black,
@@ -153,24 +157,25 @@ vars_main <- dataset_wide %>%
     race_other,
     race_mixed,
     ethnicity_hisp,
-    household_income_2y,
+    household_income_2,
     dim_yesno_q3_ever,
     reshist_state_so_factor,
     dim_yesno_q1_ever,
     dim_yesno_q2_ever,
     dim_yesno_q4_ever,
-    cybb_phenx_harm_2y,
-    peq_ss_relational_victim_2y,
-    peq_ss_reputation_victim_2y,
-    peq_ss_overt_victim_2y,
-    reshist_addr1_adi_wsum,
+    cybb_phenx_harm_2,
+    peq_ss_relational_victim_2,
+    peq_ss_reputation_victim_2,
+    peq_ss_overt_victim_2,
+    reshist_addr1_adi_perc,
     bpm_y_scr_totalprob_t_mean,
     cbcl_scr_syn_totprob_t_mean,
-    SA_y_ever,
-    SI_y_ever) %>% names()
+    SI_y_ever,
+    SA_y_ever
+    ) %>% names()
 
 write.csv(print(
-  CreateTableOne2(
+  CreateTableOne(
     data = dataset_wide,
     vars = vars_main,
     strata = "LGBT_inclusive_ever",
@@ -188,52 +193,18 @@ write.csv(print(
       "dim_yesno_q2_ever",
       "dim_yesno_q3_ever",
       "dim_yesno_q4_ever",
-      "cybb_phenx_harm_2y",
+      "cybb_phenx_harm_2",
       "suicidality_y_ever",
-       "SI_y_ever",
-      "SA_y_ever"
+      "SA_y_ever",
+       "SI_y_ever"
     ),
-    pDigits = 5,
-    includeNA = T
-  )
-),
-"../outputs/table1_main_071922.csv")
-
-# Total
-write.csv(print(
-tableone::CreateTableOne(
-    data = dataset_wide,
-    vars = vars_main,
-    strata = "LGBT_inclusive_ever",
-    addOverall = T,
     includeNA = T,
-    factorVars = c(
-      "sex_br",
-      "race_white",
-      "race_black",
-      "race_aian",
-      "race_nhpi",
-      "race_asian",
-      "race_other",
-      "race_mixed",
-      "ethnicity_hisp",
-      "dim_yesno_q1_ever",
-      "dim_yesno_q2_ever",
-      "dim_yesno_q3_ever",
-      "dim_yesno_q4_ever",
-      "cybb_phenx_harm_2y",
-      "suicidality_y_ever",
-       "SI_y_ever",
-      "SA_y_ever"
-    )
-), 
-missing = T,
-pDigits = 7
+    addOverall = T
+  ),
+  missing = T,
+  pDigits = 5
 ),
-"../outputs/table1_main_total_071922.csv")
-
-# Missing values
-write.csv(print(questionr::freq.na(data = dataset_wide, vars_main)), "../outputs/table1_main_missing_071922.csv")
+"../outputs/table1_main_080522.csv")
 ```
 
 # Adjusted p-values
@@ -241,12 +212,12 @@ write.csv(print(questionr::freq.na(data = dataset_wide, vars_main)), "../outputs
 # Calculate adjusted p-values
 # Sheet 2: p-values from CreateTableOne2
 
-p_values <- "../outputs/table1_main_071922.xlsx" %>% read_excel(sheet = 2)
+p_values <- "../outputs/table1_main_080522.xlsx" %>% read_excel(sheet = 2)
 
 p_values <- p_values %>%
   mutate(adj_p = round(p.adjust(p, method = "fdr", ), 3))
 
-writexl::write_xlsx(p_values, "../outputs/table1_main_adjp_071922.xlsx")
+writexl::write_xlsx(p_values, "../outputs/table1_main_adjp_080522.xlsx")
 ```
 
 ```{r}
@@ -275,7 +246,7 @@ vars_supp <- dataset_wide %>%
   ) %>% names()
 
 write.csv(print(
-  CreateTableOne2(
+  CreateTableOne(
     data = dataset_wide,
     vars = vars_supp,
     strata = "LGBT_inclusive_ever",
@@ -291,21 +262,23 @@ write.csv(print(
       "diagnosis_depression_y_ever",
       "suicidality_y_ever"
     ),
-    pDigits = 5,
-    includeNA = T
-  )
+    includeNA = T,
+    addOverall = T
+  ),
+  missing = T,
+  pDigits = 5
 ),
-"../outputs/table1_supp_071922.csv")
+"../outputs/table1_supp_080522.csv")
 ```
 
 ```{r}
 # Sheet 2: p-values from CreateTableOne2
-p_values_supp <- "../outputs/table1_supp_071922.xlsx" %>% read_excel(sheet = 2)
+p_values_supp <- "../outputs/table1_supp_080522.xlsx" %>% read_excel(sheet = 2)
 
 p_values_supp <- p_values_supp %>%
   mutate(adj_p = round(p.adjust(p, method = "fdr", ), 3))
 
-writexl::write_xlsx(p_values_supp, "../outputs/table1_supp_adjp_071922.xlsx")
+writexl::write_xlsx(p_values_supp, "../outputs/table1_supp_adjp_080522.xlsx")
 ```
 
 
