@@ -18,11 +18,12 @@ library(tableone)
 library(data.table)
 ```
 
+# 1. Create wide data at 3 timepoints (for table 1)
 ```{r}
-dataset_long <- read.csv("../outputs/dataset_SGM_3tp.csv")
+dataset_long_3tp <- read.csv("../outputs/dataset_SGM_3tp.csv")
 
 # table S1
-write.csv(print(CreateTableOne(data = dataset_long, strata = "eventname", addOverall = T,
+write.csv(print(CreateTableOne(data = dataset_long_3tp, strata = "eventname", addOverall = T,
                                vars = c("age_year", "kbi_y_sex_orient", "kbi_y_trans_id", "LGBT", "LGBT_inclusive"),
                                factorVars = c("kbi_y_sex_orient", "kbi_y_trans_id", "LGBT", "LGBT_inclusive")),
                 missing = T), 
@@ -30,7 +31,7 @@ write.csv(print(CreateTableOne(data = dataset_long, strata = "eventname", addOve
 ```
 
 ```{r}
-dataset_long <- dataset_long %>% 
+dataset_long_3tp <- dataset_long_3tp %>% 
   dplyr::select(
     # demographics
     src_subject_id, eventname,
@@ -54,12 +55,52 @@ dataset_long <- dataset_long %>%
   )
 
 # Wide data
-dataset_wide <- dataset_long %>% 
+dataset_wide_3tp <- dataset_long_3tp %>% 
   pivot_wider(names_from = eventname, values_from = site_id_l_br:LGBT, names_sep = "_") %>% 
   # remove empty columns
   remove_empty("cols") %>% 
   # rename site at 1y
   rename(site_id_l_br = "site_id_l_br_1")
 
-write.csv(file = "../outputs/dataset_SGM_wide_3tp.csv", x = dataset_wide, row.names = F, na = "")
+write.csv(file = "../outputs/dataset_SGM_wide_3tp.csv", x = dataset_wide_3tp, row.names = F, na = "")
 ```
+
+# 2. Create wide data at 1-year and 2-year follow-up (for figure 1)
+```{r}
+data_long_2tp <- read.csv("../outputs/dataset_SGM_long_mm.csv") 
+
+# Add a cut off for reshist_state_so_factor at 10%
+data_long_2tp <- data_long_2tp %>% 
+  mutate(reshist_state_so_factor_at10 = 
+           case_when(reshist_state_so_factor > (quantile(data_long_2tp$reshist_state_so_factor, probs = 0.9, na.rm = T) ) ~ 1,
+                     reshist_state_so_factor <= (quantile(data_long_2tp$reshist_state_so_factor, probs = 0.9, na.rm = T) ) ~ 0,
+                     TRUE ~ NA_real_))
+
+data_wide_2tp <- data_long_2tp %>% 
+  dplyr::select(contains(c("src", "reshist_state_so_factor")), LGBT_inclusive, bpm_y_scr_totalprob_r, cbcl_scr_syn_totprob_t,
+                bpm_y_scr_totalprob_t, cbcl_scr_syn_totprob_t, SA_y, SI_y, dim_yesno_q3, eventname) %>%
+  pivot_wider(., names_from = eventname, values_from = LGBT_inclusive:dim_yesno_q3)
+
+# Recreate ever variables as it's different from wide data at 3 timepoints
+data_wide_2tp <- data_wide_2tp %>% 
+  rowwise() %>% 
+  # mean BPM
+  mutate(bpm_y_scr_totalprob_t_mean = mean(c(bpm_y_scr_totalprob_t_1, bpm_y_scr_totalprob_t_2), na.rm = T),
+         # mean CBCL
+         cbcl_scr_syn_totprob_t_mean = mean(c(cbcl_scr_syn_totprob_t_1, cbcl_scr_syn_totprob_t_2), na.rm = T),
+         # discrimination
+         dim_yesno_q3_ever = case_when(dim_yesno_q3_1 == 1 | dim_yesno_q3_2 == 1 ~ 1,
+                                       dim_yesno_q3_1 == 0 | dim_yesno_q3_2 == 0 ~ 0,
+                                       TRUE ~ NA_real_),
+         
+         LGBT_inclusive_ever = case_when(LGBT_inclusive_1 == 1 | LGBT_inclusive_2 == 1 ~ 1,
+                                         LGBT_inclusive_1 == 0 | LGBT_inclusive_2 == 0 ~ 0,
+                                         TRUE ~ NA_real_))
+
+data_wide_2tp$SA_y_ever <- apply(data_wide_2tp[,grepl("SA_y", colnames(data_wide_2tp))],1 ,function(x) {any(x == 1)*1})
+data_wide_2tp$SI_y_ever <- apply(data_wide_2tp[,grepl("SI_y", colnames(data_wide_2tp))],1 ,function(x) {any(x == 1)*1})
+data_wide_2tp$dim_yesno_q3_ever <- factor(data_wide_2tp$dim_yesno_q3_ever, levels = c("1", "0"))
+
+write.csv(file = "../outputs/dataset_SGM_wide_2tp.csv", x = data_wide_2tp, row.names = F, na = "")
+```
+
