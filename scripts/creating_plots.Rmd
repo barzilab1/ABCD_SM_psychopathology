@@ -23,53 +23,13 @@ library(scales)
 
 # Create data
 ```{r}
-
-
-data_long <- read_csv("../outputs/dataset_SGM_long_mm.csv") 
-
-# Add a cut off for reshist_state_so_factor at 10%
-data_long <- data_long %>% 
-  mutate(reshist_state_so_factor_at10 = 
-           case_when(reshist_state_so_factor > (quantile(data_long$reshist_state_so_factor, probs = 0.9, na.rm = T) ) ~ 1,
-                     reshist_state_so_factor <= (quantile(data_long$reshist_state_so_factor, probs = 0.9, na.rm = T) ) ~ 0,
-                     TRUE ~ NA_real_))
-```
-
-```{r}
-data_wide <- data_long %>% 
-  dplyr::select(contains(c("src", "reshist_state_so_factor")), LGBT_inclusive, bpm_y_scr_totalprob_r, cbcl_scr_syn_totprob_t,
-                bpm_y_scr_totalprob_t, cbcl_scr_syn_totprob_t, SA_y, SI_y, dim_yesno_q3, eventname) %>%
-  pivot_wider(., names_from = eventname, values_from = LGBT_inclusive:dim_yesno_q3)
-```
-
-```{r}
-# Create wide data for plots
-data_wide <- data_wide %>% 
-  rowwise() %>% 
-  # mean BPM
-  mutate(bpm_y_scr_totalprob_t_mean = mean(c(bpm_y_scr_totalprob_t_1, bpm_y_scr_totalprob_t_2), na.rm = T),
-         # mean CBCL
-         cbcl_scr_syn_totprob_t_mean = mean(c(cbcl_scr_syn_totprob_t_1, cbcl_scr_syn_totprob_t_2), na.rm = T),
-         # discrimination
-         dim_yesno_q3_ever = case_when(dim_yesno_q3_1 == 1 | dim_yesno_q3_2 == 1 ~ 1,
-                                       (dim_yesno_q3_1 == 0 | dim_yesno_q3_2 == 0) &
-                                         # no need to check for 1, first case already checked that 
-                                         (dim_yesno_q3_1 != 1 & dim_yesno_q3_2 != 1) ~ 0,
-                                       TRUE ~ NA_real_),
-         
-         LGBT_inclusive_ever = case_when(LGBT_inclusive_1 == 1 | LGBT_inclusive_2 == 1 ~ 1,
-                                         (LGBT_inclusive_1 == 0 | LGBT_inclusive_2 == 0) &
-                                           (LGBT_inclusive_1 != 1 & LGBT_inclusive_2 != 1) ~ 0,
-                                         TRUE ~ NA_real_))
-
-data_wide$SA_y_ever <- apply(data_wide[,grepl("SA_y", colnames(data_wide))],1 ,function(x) {any(x == 1)*1})
-data_wide$SI_y_ever <- apply(data_wide[,grepl("SI_y", colnames(data_wide))],1 ,function(x) {any(x == 1)*1})
-data_wide$dim_yesno_q3_ever <- factor(data_wide$dim_yesno_q3_ever, levels = c("1", "0"))
+data_wide <- read_csv("../outputs/dataset_SGM_wide_2tp.csv") 
 ```
 
 # BPM
 ## State
 ```{r}
+# Get adjusted p-values
 plot_bpm_at10_test <- data_wide %>% 
   dplyr::select(bpm_y_scr_totalprob_t_mean, LGBT_inclusive_ever, reshist_state_so_factor_at10) %>% 
   filter(!is.na(LGBT_inclusive_ever) & !is.na(reshist_state_so_factor_at10))
@@ -84,6 +44,7 @@ p_10_adj <- round(p.adjust(c(p1_10, p2_10), method = "fdr"), 4)
 ```
 
 ```{r}
+# Create data for plot
 plot_bpm_at10 <- data_wide %>% 
   dplyr::select(bpm_y_scr_totalprob_t_mean, LGBT_inclusive_ever, reshist_state_so_factor_at10) %>% 
   filter(!is.na(LGBT_inclusive_ever) & !is.na(reshist_state_so_factor_at10)) %>% 
@@ -95,17 +56,15 @@ plot_bpm_at10 <- data_wide %>%
   mutate(LGBT_inclusive_ever = recode(LGBT_inclusive_ever, `1` = "SGM", `0` = "Non-SGM"),
          reshist_state_so_factor_at10 = recode(reshist_state_so_factor_at10, `1` = "High", `0` = "Medium-Low"))
 
-
+# Label for significance level
 text_label_at10 <- data.frame(label = c("* * *", "*"),
                               LGBT_inclusive_ever = names(table(plot_bpm_at10$LGBT_inclusive_ever)),
                               reshist_state_so_factor_at10 = names(table(plot_bpm_at10$reshist_state_so_factor_at10)),
                               x = c(1.5, 1.5),
                               y = c(61.7, 61.7))
 
-
-plot_1 <- ggplot(plot_bpm_at10, aes(x = reshist_state_so_factor_at10, 
-                          y = Mean, 
-                          fill = reshist_state_so_factor_at10)) +  
+# Plot
+plot_1 <- ggplot(plot_bpm_at10, aes(x = reshist_state_so_factor_at10, y = Mean, fill = reshist_state_so_factor_at10)) +  
   geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
   facet_wrap(~ LGBT_inclusive_ever, nrow = 1) +
   geom_errorbar(aes(ymin = Mean - CI, ymax = Mean + CI), position = position_dodge(0.9), width = 0.2, size = 0.2) +
@@ -115,12 +74,12 @@ plot_1 <- ggplot(plot_bpm_at10, aes(x = reshist_state_so_factor_at10,
   theme(plot.title = element_text(hjust = 0.5), panel.grid.major.x = element_blank()) +
   theme(axis.text.x = element_blank(),
         axis.text.y = element_text(size = 6),
-        axis.title.y = element_text(size = 5.5),
         axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 5.5),
         plot.title = element_text(size = 6, hjust = 0.5, colour = "black", face = "bold"),
         strip.text = element_text(size = 6, color = "dark green", face = "bold"),
         axis.ticks.x = element_blank(),
-        axis.ticks=element_line(size=0.2),
+        axis.ticks = element_line(size = 0.2),
         legend.position = "top",
         legend.title = element_text(size = 6),
         legend.text = element_text(size = 6),
@@ -128,20 +87,18 @@ plot_1 <- ggplot(plot_bpm_at10, aes(x = reshist_state_so_factor_at10,
         plot.tag = element_text(size = 9),
         plot.tag.position = c(0.05, 0.95)) +
   scale_fill_manual("State level indicators of bias \n  against sexual orientation", values = c("High" = "coral2", "Medium-Low" = "cyan4")) +
-  geom_text(
-    data    = text_label_at10,
-    mapping = aes(x = x, y = y, label = label),
-    size = 2.3,
-    face = "bold"
-  ) +
+  geom_text(data    = text_label_at10,
+            mapping = aes(x = x, y = y, label = label),
+            size = 2.3, face = "bold") +
   annotate("segment", x = 1, xend = 2, y = 61.5, yend = 61.5, size = 0.22) +
   scale_y_continuous(limits=c(40, 62), oob = rescale_none)
 
-ggsave(filename = "../plots/BMP_state.png", width = 5, height = 4)
+# ggsave(filename = "../plots/BMP_state.png", width = 5, height = 4)
 ```
 
 ## Individual
 ```{r}
+# Get adjusted p-values
 p1_dim <- t.test(data_wide$bpm_y_scr_totalprob_t_mean[data_wide$LGBT_inclusive_ever == 0 & data_wide$dim_yesno_q3_ever == 0],
                  data_wide$bpm_y_scr_totalprob_t_mean[data_wide$LGBT_inclusive_ever == 0 & data_wide$dim_yesno_q3_ever == 1])$p.value
 
@@ -152,6 +109,7 @@ p_dim_adj <- round(p.adjust(c(p1_dim, p2_dim), method = "fdr"), 5)
 ```
 
 ```{r}
+# Create data for plot
 plot_bpm_dim <- data_wide %>% 
   dplyr::select(bpm_y_scr_totalprob_t_mean, LGBT_inclusive_ever, dim_yesno_q3_ever) %>% 
   filter(!is.na(LGBT_inclusive_ever) & !is.na(dim_yesno_q3_ever)) %>% 
@@ -164,35 +122,30 @@ plot_bpm_dim <- data_wide %>%
          dim_yesno_q3_ever = recode(dim_yesno_q3_ever, `1` = "Yes", `0` = "No"))
 
 
+# Label for significance level
 text_label_dim <- data.frame(label = c("* * *", "* * *"),
                              LGBT_inclusive_ever = names(table(plot_bpm_dim$LGBT_inclusive_ever)),
                              dim_yesno_q3_ever = names(table(plot_bpm_dim$dim_yesno_q3_ever)),
                              x = c(1.5, 1.5),
                               y = c(61.7, 61.7))
-
-
-plot_2 <- ggplot(plot_bpm_dim, aes(x = dim_yesno_q3_ever, 
-                         y = Mean, 
-                         fill = dim_yesno_q3_ever)) +  
-  geom_line() +
-  geom_bar(aes(x = dim_yesno_q3_ever, 
-                         y = Mean, 
-                         fill = dim_yesno_q3_ever), stat = "identity", position = position_dodge(width = 0.9)) +
+  
+# Plot
+plot_2 <- ggplot(plot_bpm_dim, aes(x = dim_yesno_q3_ever, y = Mean, fill = dim_yesno_q3_ever)) +  
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
   facet_wrap(~ LGBT_inclusive_ever, nrow = 1) +
   geom_errorbar(aes(ymin = Mean - CI, ymax = Mean + CI), position = position_dodge(0.9), width = 0.2, size = 0.2) +
-  
   xlab("") + ylab("BPM T scores (mean, 95% CI)") +
   labs(tag = "D.") +
   ggtitle("Brief Problem Monitor") +
   theme(plot.title = element_text(hjust = 0.5), panel.grid.major.x = element_blank()) +
   theme(axis.text.x = element_blank(),
         axis.text.y = element_text(size = 6),
-        axis.title.y = element_text(size = 5.5),
         axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 5.5),
         plot.title = element_text(size = 6, hjust = 0.5, colour = "black", face = "bold"),
         strip.text = element_text(size = 6, color = "dark green", face = "bold"),
         axis.ticks.x = element_blank(),
-        axis.ticks=element_line(size=0.2),
+        axis.ticks = element_line(size = 0.2),
         legend.position = "top",
         legend.title = element_text(size = 6),
         legend.text = element_text(size = 6),
@@ -200,16 +153,13 @@ plot_2 <- ggplot(plot_bpm_dim, aes(x = dim_yesno_q3_ever,
         plot.tag = element_text(size = 9),
         plot.tag.position = c(0.05, 0.95)) +
   scale_fill_manual("Individual experience of \n         discrimination \n         against SGM", values = c("Yes" = "#E6AB02", "No" = "#1B9E77")) +
-  geom_text(
-    data    = text_label_dim,
-    mapping = aes(x = x, y = y, label = label),
-    size = 2.2,
-    face = "bold"
-  ) +
+  geom_text(data = text_label_dim,
+            mapping = aes(x = x, y = y, label = label),
+            size = 2.2, face = "bold") +
   annotate("segment", x = 1, xend = 2, y = 61.5, yend = 61.5, size = 0.2) +
   scale_y_continuous(limits=c(40, 62), oob = rescale_none)
 
-ggsave("../plots/BMP_individual.png", width = 5, height = 4)
+# ggsave("../plots/BMP_individual.png", width = 5, height = 4)
 ```
 
 
@@ -250,9 +200,7 @@ text_label_state_SI <- data.frame(label = c("*", "ns"),  # Create data for text
                                   y = c(49, 49))
 
 
-plot_3 <- ggplot(plot_state_SI, aes(x = reshist_state_so_factor_at10, 
-                                    y = sui.prop, 
-                                    fill = reshist_state_so_factor_at10)) +  
+plot_3 <- ggplot(plot_state_SI, aes(x = reshist_state_so_factor_at10, y = sui.prop, fill = reshist_state_so_factor_at10)) +  
   geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
   facet_wrap(~ LGBT_inclusive_ever, nrow = 1) +
   geom_errorbar(aes(ymin = sui.prop - CI, ymax = sui.prop + CI), position = position_dodge(0.9), width = 0.2, size = 0.2) +
@@ -263,8 +211,8 @@ plot_3 <- ggplot(plot_state_SI, aes(x = reshist_state_so_factor_at10,
   theme(plot.title = element_text(hjust = 0.5), panel.grid.major.x = element_blank()) +
   theme(axis.text.x = element_blank(),
         axis.text.y = element_text(size = 6),
-        axis.title.y = element_text(size = 5),
         axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 5),
         plot.title = element_text(size = 6, hjust = 0.5, colour = "black", face = "bold"),
         strip.text = element_text(size = 5.5, color = "dark green", face = "bold"),
         axis.ticks.x = element_blank(),
@@ -276,15 +224,12 @@ plot_3 <- ggplot(plot_state_SI, aes(x = reshist_state_so_factor_at10,
         plot.tag = element_text(size = 9),
         plot.tag.position = c(0.05, 0.95)) +
   scale_fill_manual("State level indicators of bias \n  against sexual orientation", values = c("High" = "coral2", "Medium-Low" = "cyan4")) +
-  geom_text(
-    data    = text_label_state_SI,
-    mapping = aes(x = x, y = y, label = label),
-    size = 2,
-    face = "bold"
-  ) +
+  geom_text(data    = text_label_state_SI,
+            mapping = aes(x = x, y = y, label = label),
+            size = 2, face = "bold") +
   annotate("segment", x = 1, xend = 2, y = 46.8, yend = 46.8, size = 0.2)
 
-ggsave("../plots/SI_state.png", width = 5, height = 4)
+# ggsave("../plots/SI_state.png", width = 5, height = 4)
 ```
 
 ## Individual
@@ -322,9 +267,7 @@ text_label_dim_SI <- data.frame(label = c("* * *", "* * *"),
                                 x = c(1.5, 1.5),
                                 y = c(59, 59))
 
-plot_4 <- ggplot(plot_dim_SI, aes(x = dim_yesno_q3_ever, 
-                                  y = sui.prop, 
-                                  fill = dim_yesno_q3_ever)) +  
+plot_4 <- ggplot(plot_dim_SI, aes(x = dim_yesno_q3_ever, y = sui.prop, fill = dim_yesno_q3_ever)) +  
   geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
   facet_wrap(~ LGBT_inclusive_ever, nrow = 1) +
   geom_errorbar(aes(ymin = sui.prop - CI, ymax = sui.prop + CI), position = position_dodge(0.9), width = 0.2, size = 0.2) +
@@ -335,8 +278,8 @@ plot_4 <- ggplot(plot_dim_SI, aes(x = dim_yesno_q3_ever,
   theme(plot.title = element_text(hjust = 0.5), panel.grid.major.x = element_blank()) +
   theme(axis.text.x = element_blank(),
         axis.text.y = element_text(size = 6),
-        axis.title.y = element_text(size = 5),
         axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 5),
         plot.title = element_text(size = 6, hjust = 0.5, colour = "black", face = "bold"),
         strip.text = element_text(size = 5.5, color = "dark green", face = "bold"),
         axis.ticks.x = element_blank(),
@@ -348,15 +291,13 @@ plot_4 <- ggplot(plot_dim_SI, aes(x = dim_yesno_q3_ever,
         plot.tag = element_text(size = 9),
         plot.tag.position = c(0.05, 0.95)) +
   scale_fill_manual("Individual experience of \n         discrimination \n         against SGM", values = c("Yes" = "#E6AB02", "No" = "#1B9E77")) +
-  geom_text(
-    data    = text_label_dim_SI,
-    mapping = aes(x = x, y = y, label = label),
-    size = 2.2,
-    face = "bold"
-  ) +
+  geom_text(data    = text_label_dim_SI,
+            mapping = aes(x = x, y = y, label = label),
+            size = 2.2,
+            face = "bold") +
   annotate("segment", x = 1, xend = 2, y = 58.5, yend = 58.5, size = 0.25)
 
-ggsave("../plots/SI_individual.png", width = 5, height = 4)
+# ggsave("../plots/SI_individual.png", width = 5, height = 4)
 ```
 
 # SA
@@ -396,9 +337,7 @@ text_label_state_SA <- data.frame(label = c("ns", "ns"),
                                 y = c(19, 19))
 
 
-plot_5 <- ggplot(plot_state_SA, aes(x = reshist_state_so_factor_at10, 
-                                  y = sui.prop, 
-                                  fill = reshist_state_so_factor_at10)) +  
+plot_5 <- ggplot(plot_state_SA, aes(x = reshist_state_so_factor_at10, y = sui.prop, fill = reshist_state_so_factor_at10)) +  
   geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
   facet_wrap(~ LGBT_inclusive_ever, nrow = 1) +
   geom_errorbar(aes(ymin = sui.prop - CI, ymax = sui.prop + CI), position = position_dodge(0.9), width = 0.2, size = 0.2) +
@@ -409,8 +348,8 @@ plot_5 <- ggplot(plot_state_SA, aes(x = reshist_state_so_factor_at10,
   theme(plot.title = element_text(hjust = 0.5), panel.grid.major.x = element_blank()) +
   theme(axis.text.x = element_blank(),
         axis.text.y = element_text(size = 6),
-        axis.title.y = element_text(size = 5),
         axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 5),
         plot.title = element_text(size = 5.5, hjust = 0.5, colour = "black", face = "bold"),
         strip.text = element_text(size = 5.5, color = "dark green", face = "bold"),
         axis.ticks.x = element_blank(),
@@ -422,15 +361,13 @@ plot_5 <- ggplot(plot_state_SA, aes(x = reshist_state_so_factor_at10,
         plot.tag = element_text(size = 9),
         plot.tag.position = c(0.05, 0.95)) +
   scale_fill_manual("State level indicators of bias \n  against sexual orientation", values = c("High" = "coral2", "Medium-Low" = "cyan4")) + 
-  geom_text(
-    data    = text_label_state_SA,
-    mapping = aes(x = x, y = y, label = label),
-    size = 2,
-    face = "bold"
-  ) +
+  geom_text(data = text_label_state_SA,
+            mapping = aes(x = x, y = y, label = label),
+            size = 2,
+            face = "bold") +
   annotate("segment", x = 1, xend = 2, y = 18.1, yend = 18.1, size = 0.2)
 
-ggsave("../plots/SA_state.png", width = 5, height = 4)
+# ggsave("../plots/SA_state.png", width = 5, height = 4)
 ```
 
 ## Individual
@@ -469,9 +406,7 @@ text_label_dim_SA <- data.frame(label = c("* * *", "* * *"),
                                   y = c(19, 19))
 
 
-plot_6 <- ggplot(plot_dim_SA, aes(x = dim_yesno_q3_ever, 
-                                        y = sui.prop, 
-                                        fill = dim_yesno_q3_ever)) +  
+plot_6 <- ggplot(plot_dim_SA, aes(x = dim_yesno_q3_ever, y = sui.prop, fill = dim_yesno_q3_ever)) +  
   geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
   facet_wrap(~ LGBT_inclusive_ever, nrow = 1) +
   geom_errorbar(aes(ymin = sui.prop - CI, ymax = sui.prop + CI), position = position_dodge(0.9), width = 0.2, size = 0.2) +
@@ -495,15 +430,13 @@ plot_6 <- ggplot(plot_dim_SA, aes(x = dim_yesno_q3_ever,
         plot.tag = element_text(size = 9),
         plot.tag.position = c(0.05, 0.95)) +
   scale_fill_manual("Individual experience of \n         discrimination \n         against SGM", values = c("Yes" = "#E6AB02", "No" = "#1B9E77")) +
-  geom_text(
-    data    = text_label_dim_SA,
-    mapping = aes(x = x, y = y, label = label),
-    size = 2.2,
-    face = "bold"
-  ) +
+  geom_text(data    = text_label_dim_SA,
+            mapping = aes(x = x, y = y, label = label),
+            size = 2.2,
+            face = "bold") +
   annotate("segment", x = 1, xend = 2, y = 18.6, yend = 18.6, size = 0.2)
 
-ggsave("../plots/SA_individual.png", width = 5, height = 4)
+# ggsave("../plots/SA_individual.png", width = 5, height = 4)
 ```
 
 # Merge plots
@@ -525,7 +458,7 @@ ggarrange(
   common.legend = T,
   legend = "right")
 
-# ggsave("../plots/interaction_plots_state_062322_main_SISA.png", width = 5, height = 3, dpi = 320)
+ggsave("../plots/interaction_plots_state_main.png", width = 5, height = 3, dpi = 320)
 
 
 # BPM, SI, SA individual discrimination
@@ -545,7 +478,7 @@ ggarrange(
   common.legend = T,
   legend = "right")
 
-# ggsave("../plots/interaction_plots_main.png", width = 5, height = 2, dpi = 320)
+ggsave("../plots/interaction_plots_individual_main.png", width = 5, height = 2, dpi = 320)
 ```
 
 
@@ -582,24 +515,18 @@ text_label_dim_cbcl <- data.frame(label = c("* * *", "* * *"),
                               y = c(55.7, 55.7))
 
 
-plot_7 <- ggplot(plot_dim_cbcl, aes(x = dim_yesno_q3_ever, 
-                                   y = Mean, 
-                                   fill = dim_yesno_q3_ever)) +  
-  geom_line() +
-  geom_bar(aes(x = dim_yesno_q3_ever, 
-               y = Mean, 
-               fill = dim_yesno_q3_ever), stat = "identity", position = position_dodge(width = 0.9)) +
+plot_7 <- ggplot(plot_dim_cbcl, aes(x = dim_yesno_q3_ever, y = Mean, fill = dim_yesno_q3_ever)) +  
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
   facet_wrap(~ LGBT_inclusive_ever, nrow = 1) +
   geom_errorbar(aes(ymin = Mean - CI, ymax = Mean + CI), position = position_dodge(0.9), width = 0.2, size = 0.2) +
-  
   xlab("") + ylab("CBCL T scores (mean, 95% CI)") +
   labs(tag = "A.") +
   ggtitle("") +
   theme(plot.title = element_text(hjust = 0.5), panel.grid.major.x = element_blank()) +
   theme(axis.text.x = element_blank(),
         axis.text.y = element_text(size = 8),
-        axis.title.y = element_text(size = 7),
         axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 7),
         plot.title = element_text(size = 8, hjust = 0.5, colour = "black"),
         strip.text = element_text(size = 7.5, color = "dark green", face = "bold"),
         axis.ticks.x = element_blank(),
@@ -610,12 +537,10 @@ plot_7 <- ggplot(plot_dim_cbcl, aes(x = dim_yesno_q3_ever,
         plot.tag = element_text(),
         plot.tag.position = c(0.05, 0.95)) +
   scale_fill_manual("Individual experience of \n         discrimination \n         against SGM", values = c("Yes" = "#E6AB02", "No" = "#1B9E77")) +
-  geom_text(
-    data    = text_label_dim_cbcl,
-    mapping = aes(x = x, y = y, label = label),
-    size = 3,
-    face = "bold"
-  ) +
+  geom_text(data    = text_label_dim_cbcl,
+            mapping = aes(x = x, y = y, label = label),
+            size = 3,
+            face = "bold") +
   annotate("segment", x = 1, xend = 2, y = 55.5, yend = 55.5, size = 0.2) +
   scale_y_continuous(limits=c(40, 56), oob = rescale_none)
 
@@ -654,9 +579,7 @@ text_label_at10_cbcl <- data.frame(label = c("* * *", "*"),
                               y = c(55.7, 55.7))
 
 
-plot_8 <- ggplot(plot_cbcl_at10, aes(x = reshist_state_so_factor_at10, 
-                           y = Mean, 
-                           fill = reshist_state_so_factor_at10)) +  
+plot_8 <- ggplot(plot_cbcl_at10, aes(x = reshist_state_so_factor_at10, y = Mean, fill = reshist_state_so_factor_at10)) +  
   geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
   facet_wrap(~ LGBT_inclusive_ever, nrow = 1) +
   geom_errorbar(aes(ymin = Mean - CI, ymax = Mean + CI), position = position_dodge(0.9), width = 0.2, size = 0.2) +
@@ -666,8 +589,8 @@ plot_8 <- ggplot(plot_cbcl_at10, aes(x = reshist_state_so_factor_at10,
   theme(plot.title = element_text(hjust = 0.5), panel.grid.major.x = element_blank()) +
   theme(axis.text.x = element_blank(),
         axis.text.y = element_text(size = 8),
-        axis.title.y = element_text(size = 7),
         axis.title.x = element_blank(),
+        axis.title.y = element_text(size = 7),
         plot.title = element_text(size = 8, hjust = 0.5, colour = "black"),
         strip.text = element_text(size = 7.5, color = "dark green", face = "bold"),
         axis.ticks.x = element_blank(),
@@ -678,12 +601,10 @@ plot_8 <- ggplot(plot_cbcl_at10, aes(x = reshist_state_so_factor_at10,
         plot.tag = element_text(),
         plot.tag.position = c(0.05, 0.95)) +
   scale_fill_manual("State level indicators of bias \n  against sexual orientation", values = c("High" = "coral2", "Medium-Low" = "cyan4")) +
-  geom_text(
-    data    = text_label_at10_cbcl,
-    mapping = aes(x = x, y = y, label = label),
-    size = 3,
-    face = "bold"
-  ) +
+  geom_text(data    = text_label_at10_cbcl,
+            mapping = aes(x = x, y = y, label = label),
+            size = 3,
+            face = "bold") +
   annotate("segment", x = 1, xend = 2, y = 55.5, yend = 55.5, size = 0.2) +
   scale_y_continuous(limits=c(40, 56), oob = rescale_none)
 
