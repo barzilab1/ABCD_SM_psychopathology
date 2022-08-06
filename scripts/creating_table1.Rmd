@@ -205,6 +205,9 @@ write.csv(print(
   pDigits = 5
 ),
 "../outputs/table1_main_080522.csv")
+
+# Get number of missing values (N) for each variable (% is from CreateTableOne function)
+print(questionr::freq.na(data = dataset_wide, vars_main))
 ```
 
 # Adjusted p-values
