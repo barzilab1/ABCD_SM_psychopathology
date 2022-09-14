@@ -54,14 +54,6 @@ write.csv(file = "outputs/dataset_SGM_3tp.csv", x = dataset, row.names = F, na =
 # Create data for mixed models (at 1-year and 2-year follow-up)
 dataset_long <- dataset[dataset$eventname %in% c("1","2"),]
 dataset_long <- dataset_long[,colSums(is.na(dataset_long)) != nrow(dataset_long)]
-# dataset_long <- dataset_long %>% 
-#   mutate(eventname = recode(eventname, 
-#                             `1_year_follow_up_y_arm_1` = "1",
-#                             `2_year_follow_up_y_arm_1` = "2"),
-#          age_year = age/12)
-
-# dataset_long$SI_y <- as.factor(dataset_long$SI_y)
-# dataset_long$SA_y <- as.factor(dataset_long$SA_y)
 
 # replace parent education - 2y as 1y
 edu_2y <- dataset_long %>% filter(eventname == "1") %>% 

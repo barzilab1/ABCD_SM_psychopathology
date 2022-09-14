@@ -140,6 +140,8 @@ dataset_wide$ksads_externalizing_exclude_attentation_symptoms_sum_mean <-
   rowMeans(dataset_wide[,which(grepl("ksads_externalizing_exclude_attentation_symptoms_sum", colnames(dataset_wide)))], na.rm = T)
 
 dataset_wide$ksads_ptsd_symptoms_summary_mean <- rowMeans(dataset_wide[,which(grepl("ksads_ptsd_symptoms_summary", colnames(dataset_wide)))], na.rm = T)
+
+dataset_wide <- dataset_wide %>%  filter(!is.na(LGBT_inclusive_ever))
 ```
 
 # Table 1
@@ -204,7 +206,7 @@ write.csv(print(
   missing = T,
   pDigits = 5
 ),
-"../outputs/table1_main_080522.csv")
+"../outputs/table1_main_091422.csv")
 
 # Get number of missing values (N) for each variable (% is from CreateTableOne function)
 print(questionr::freq.na(data = dataset_wide, vars_main))
@@ -215,12 +217,12 @@ print(questionr::freq.na(data = dataset_wide, vars_main))
 # Calculate adjusted p-values
 # Sheet 2: p-values from CreateTableOne2
 
-p_values <- "../outputs/table1_main_080522.xlsx" %>% read_excel(sheet = 2)
+p_values <- "../outputs/table1_main_091422.xlsx" %>% read_excel(sheet = 2)
 
 p_values <- p_values %>%
   mutate(adj_p = round(p.adjust(p, method = "fdr", ), 3))
 
-writexl::write_xlsx(p_values, "../outputs/table1_main_adjp_080522.xlsx")
+writexl::write_xlsx(p_values, "../outputs/table1_main_adjp_091422.xlsx")
 ```
 
 ```{r}
@@ -271,17 +273,17 @@ write.csv(print(
   missing = T,
   pDigits = 5
 ),
-"../outputs/table1_supp_080522.csv")
+"../outputs/table1_supp_091422.csv")
 ```
 
 ```{r}
 # Sheet 2: p-values from CreateTableOne2
-p_values_supp <- "../outputs/table1_supp_080522.xlsx" %>% read_excel(sheet = 2)
+p_values_supp <- "../outputs/table1_supp_091422.xlsx" %>% read_excel(sheet = 2)
 
 p_values_supp <- p_values_supp %>%
   mutate(adj_p = round(p.adjust(p, method = "fdr", ), 3))
 
-writexl::write_xlsx(p_values_supp, "../outputs/table1_supp_adjp_080522.xlsx")
+writexl::write_xlsx(p_values_supp, "../outputs/table1_supp_adjp_091422.xlsx")
 ```
 
 
