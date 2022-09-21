@@ -141,7 +141,7 @@ dataset_wide$ksads_externalizing_exclude_attentation_symptoms_sum_mean <-
 
 dataset_wide$ksads_ptsd_symptoms_summary_mean <- rowMeans(dataset_wide[,which(grepl("ksads_ptsd_symptoms_summary", colnames(dataset_wide)))], na.rm = T)
 
-dataset_wide <- dataset_wide %>%  filter(!is.na(LGBT_inclusive_ever))
+dataset_wide <- dataset_wide %>% filter(!is.na(LGBT_inclusive_ever))
 ```
 
 # Table 1
@@ -212,10 +212,9 @@ write.csv(print(
 print(questionr::freq.na(data = dataset_wide, vars_main))
 ```
 
-# Adjusted p-values
 ```{r}
 # Calculate adjusted p-values
-# Sheet 2: p-values from CreateTableOne2
+# Sheet 2: p-values from CreateTableOne
 
 p_values <- "../outputs/table1_main_091422.xlsx" %>% read_excel(sheet = 2)
 
@@ -226,7 +225,20 @@ writexl::write_xlsx(p_values, "../outputs/table1_main_adjp_091422.xlsx")
 ```
 
 ```{r}
-# Supplement table 1
+# Supplement table S1
+dataset_long <- read.csv("../outputs/dataset_SGM_3tp.csv")
+dataset_long <- dataset_long %>% filter(src_subject_id %in% dataset_wide$src_subject_id)
+CreateTableOne(
+    data = dataset_long,
+    vars = c("age_year", "kbi_y_sex_orient", "kbi_y_trans_id", "LGBT_inclusive"),
+    strata = "eventname",
+    factorVars = c("kbi_y_sex_orient", "kbi_y_trans_id", "LGBT_inclusive"), #"LGBT"
+    includeNA = T
+  )
+```
+
+```{r}
+# Supplement table S2
 vars_supp <- dataset_wide %>%
   dplyr::select(
     ksads_ODD_Diagnosis_ever,
@@ -277,7 +289,7 @@ write.csv(print(
 ```
 
 ```{r}
-# Sheet 2: p-values from CreateTableOne2
+# Sheet 2: p-values from CreateTableOne
 p_values_supp <- "../outputs/table1_supp_091422.xlsx" %>% read_excel(sheet = 2)
 
 p_values_supp <- p_values_supp %>%
@@ -285,8 +297,6 @@ p_values_supp <- p_values_supp %>%
 
 writexl::write_xlsx(p_values_supp, "../outputs/table1_supp_adjp_091422.xlsx")
 ```
-
-
 
 
 
