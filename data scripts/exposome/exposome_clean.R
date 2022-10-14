@@ -28,9 +28,7 @@ lpksad01$kbi_p_c_bully_l[lpksad01$kbi_p_c_bully_l == 2] = 0
 
 
 
-# exposome_set = merge(ydmes01,yle01, all = T)
 exposome_set = merge(ydmes01,cb, all = T)
-# exposome_set = merge(exposome_set,cb, all = T)
 exposome_set = merge(exposome_set,lpksad01, all = T)
 
 
