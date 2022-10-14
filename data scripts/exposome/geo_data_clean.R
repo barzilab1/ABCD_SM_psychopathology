@@ -1,4 +1,3 @@
-
 source("config.R")
 source("utility_fun.R")
 
@@ -6,11 +5,7 @@ source("utility_fun.R")
 ########### School Risk and Protective Factors ########### 
 rhds01 = load_instrument("abcd_rhds01",abcd_files_path)
 
-rhds01_lean = rhds01[, grepl("^(src|interview|event|sex)|reshist_(state|addr1_(valid|status|d1a|walkindex|grndtot|p1|drugtot|drgsale|mjsale|drgposs|dui|years|elevation|adi|popdensity))", colnames(rhds01))]
-
-
-summary(rhds01_lean[rhds01_lean$eventname %in% c("2_year_follow_up_y_arm_1", "1_year_follow_up_y_arm_1"),])
-summary(rhds01_lean)
+rhds01_lean = rhds01[, grepl("^(src|interview|event|sex)|reshist_(state|addr1_adi_(ws|pe))", colnames(rhds01))]
 
 write.csv(file = "outputs/geo_data.csv",x = rhds01_lean, row.names = F, na = "")
 

@@ -21,13 +21,6 @@ library(data.table)
 # 1. Create wide data at 3 timepoints (for table 1)
 ```{r}
 dataset_long_3tp <- read.csv("../outputs/dataset_SGM_3tp.csv")
-
-# table S1
-write.csv(print(CreateTableOne(data = dataset_long_3tp, strata = "eventname", addOverall = T,
-                               vars = c("age_year", "kbi_y_sex_orient", "kbi_y_trans_id", "LGBT", "LGBT_inclusive"),
-                               factorVars = c("kbi_y_sex_orient", "kbi_y_trans_id", "LGBT", "LGBT_inclusive")),
-                missing = T), 
-          "../outputs/table_S1.csv")
 ```
 
 ```{r}
@@ -36,7 +29,7 @@ dataset_long_3tp <- dataset_long_3tp %>%
     # demographics
     src_subject_id, eventname,
     sex_br, contains("race"), ethnicity_hisp,
-    # state level of nias against SGM
+    # state level of bias against SGM
     contains("reshist"),
     # reshist_state_so_factor, reshist_state_sexism_factor, reshist_state_racism_factor, reshist_state_immigrant_factor,
     rel_family_id, site_id_l_br, 
@@ -47,7 +40,7 @@ dataset_long_3tp <- dataset_long_3tp %>%
     dim_yesno_q1, dim_yesno_q2, dim_yesno_q3, dim_yesno_q4,
     # diagnoses, symptoms
     contains(c("iagnosis", "symptoms")),
-    suicidality_y, SA_y, SI_y,
+    SA_y, SI_y,
     # psychopathology
     bpm_y_scr_totalprob_r, bpm_y_scr_totalprob_t, cbcl_scr_syn_totprob_r, cbcl_scr_syn_totprob_t,
     # SGM

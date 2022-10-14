@@ -1,14 +1,11 @@
-
 source("config.R")
 source("utility_fun.R")
 
 
-
 ################### Youth Diagnostic Interview for DSM-5 Background Items 5 (lgbt/bullying/drop a class) ################### 
-yksad01 = load_instrument("abcd_yksad01",abcd_files_path)
+yksad01 = load_instrument("abcd_yksad01", abcd_files_path)
 
-yksad01 = yksad01[, !grepl("_(reason|remote|repeated|device|admin)", colnames(yksad01))]
-summary(yksad01)
+yksad01 = yksad01[, !grepl("___|admin|grade|deive", colnames(yksad01))]
 
 yksad01[yksad01 == "777"] = NA
 

@@ -14,22 +14,11 @@ library(dplyr)
 library(qgraph)
 library(corrplot)
 library(Hmisc)
+source("../utility_fun.R")
 ```
 
 ```{r}
 data_long <- read.csv("../outputs/dataset_SGM_long_mm.csv")
-```
-
-# Correlation plot
-```{r}
-cor_plot_function <- function(vars) {
-  cor = cor_auto(vars)
-  testRes = cor.mtest(vars, conf.level = 0.95)
-  plot <- corrplot(cor, p.mat = testRes$p, method = 'color', diag = FALSE, type = 'upper', #col = col,
-         sig.level = c(0.001, 0.01, 0.05), pch.cex = 0.4,
-         insig = 'label_sig', pch.col = 'grey20', order = 'original', tl.col = "black", tl.srt = 45, tl.cex = 0.35, cl.cex = 0.4, cl.ratio = 0.4)
-  return(plot)
-}
 ```
 
 # Correlation at 1 year

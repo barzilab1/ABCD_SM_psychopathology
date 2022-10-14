@@ -28,15 +28,7 @@ dataset_wide <- read_csv("../outputs/dataset_SGM_wide_3tp.csv")
 # Create ever variables
 ```{r}
 # LGBT_inclusive: ever baseline or 1y
-dataset_wide$LGBT_inclusive_ever_2tp <- apply(dataset_wide[,grepl("LGBT_inclusive_bl|LGBT_inclusive_1", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-dataset_wide$LGBT_inclusive_ever_2tp = ifelse( (is.na(dataset_wide$LGBT_inclusive_ever_2tp) & 
-                                                     (apply(dataset_wide[,which(grepl("LGBT_inclusive_bl|LGBT_inclusive_1", colnames(dataset_wide)))], 1, 
-                                                            function(x) {any(x == 0)}))), 
-                                                  0, dataset_wide$LGBT_inclusive_ever_2tp)
-
-
-# dataset_wide$SA_y_ever <- apply(dataset_wide[,grepl("SA_y", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-# dataset_wide$SI_y_ever <- apply(dataset_wide[,grepl("SI_y", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
+dataset_wide <- create_ever_var(data = dataset_wide, search_term = "LGBT_inclusive_bl|LGBT_inclusive_1", new_col_name = "LGBT_inclusive_ever_2tp")
 ```
 
 # Mediation
@@ -58,7 +50,7 @@ totaleffect := c + a1*b1 + a2*b2
 
 med_mod_bpm_y_2Ms_long <- sem(mod_bpm_y_2Ms_long, data = dataset_wide, se = "bootstrap", bootstrap = 500)
 
-standardizedSolution(med_mod_bpm_y_2Ms_long, type = "std.lv") %>% htmlTable::htmlTable()
+standardizedSolution(med_mod_bpm_y_2Ms_long, type = "std.lv")
 
 plot_mod_bpm_y_2Ms_long <- lavaanPlot(
   model = med_mod_bpm_y_2Ms_long,
@@ -69,34 +61,32 @@ plot_mod_bpm_y_2Ms_long <- lavaanPlot(
   ),
   edge_options = list(color = "darkolivegreen"),
   coefs = TRUE,
-  # stand = TRUE,
   digits = 3,
   stars = "regress"
 )
 
 save_png(plot_mod_bpm_y_2Ms_long, "../plots/mediation_BPM.png" )
 
-summary(med_mod_bpm_y_2Ms_long)
-summary(med_mod_bpm_y_2Ms_long, standardized=T, rsquare=T)
+summary(med_mod_bpm_y_2Ms_long) # Get number of participants used in the models
 ```
 
 ```{r}
 set.seed(060822)
-mod_cbcl_t_2Ms_long <- '
-dim_yesno_q3_1 ~ a1*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp + scale(household_income_2)
-reshist_state_so_factor ~ a2*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp + scale(household_income_2)
-cbcl_scr_syn_totprob_t_2 ~ b1*dim_yesno_q3_1 + b2*reshist_state_so_factor + c*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp + scale(household_income_2)
+mod_SI_2Ms_long <- '
+dim_yesno_q3_1 ~ a1*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp  + scale(household_income_2)
+reshist_state_so_factor ~ a2*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp  + scale(household_income_2)
+SI_y_2 ~ b1*dim_yesno_q3_1 + b2*reshist_state_so_factor + c*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp  + scale(household_income_2)
 indirecteffectdiscrim := a1*b1
 indirecteffectstate := a2*b2
 totaleffect := c + a1*b1 + a2*b2
 '
 
-med_mod_cbcl_t_2Ms_long <- sem(mod_cbcl_t_2Ms_long, data = dataset_wide, se = "bootstrap", bootstrap = 500)
+med_mod_SI_2Ms_long <- sem(mod_SI_2Ms_long, data = dataset_wide, se = "bootstrap", bootstrap = 500)
 
-standardizedSolution(med_mod_cbcl_t_2Ms_long, type = "std.lv") %>% htmlTable::htmlTable()
+standardizedSolution(med_mod_SI_2Ms_long, type = "std.all") %>% htmlTable::htmlTable()
 
-plot_mod_cbcl_t_2Ms_long <- lavaanPlot(
-  model = med_mod_cbcl_t_2Ms_long,
+plot_mod_SI_2Ms_long <- lavaanPlot(
+  model = med_mod_SI_2Ms_long,
   node_options = list(
     shape = "box",
     fontname = "Arial",
@@ -109,9 +99,9 @@ plot_mod_cbcl_t_2Ms_long <- lavaanPlot(
   stars = "regress"
 )
 
-save_png(plot_mod_cbcl_t_2Ms_long, "../plots/mediation_CBCL.png" )
+save_png(plot_mod_SI_2Ms_long, "../plots/mediation_SI.png" )
 
-summary(med_mod_cbcl_t_2Ms_long)
+summary(med_mod_SI_2Ms_long)
 ```
 
 ```{r}
@@ -148,24 +138,23 @@ save_png(plot_mod_SA_2Ms_long, "../plots/mediation_SA.png" )
 summary(med_mod_SA_2Ms_long)
 ```
 
-
 ```{r}
 set.seed(060822)
-mod_SI_2Ms_long <- '
-dim_yesno_q3_1 ~ a1*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp  + scale(household_income_2)
-reshist_state_so_factor ~ a2*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp  + scale(household_income_2)
-SI_y_2 ~ b1*dim_yesno_q3_1 + b2*reshist_state_so_factor + c*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp  + scale(household_income_2)
+mod_cbcl_t_2Ms_long <- '
+dim_yesno_q3_1 ~ a1*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp + scale(household_income_2)
+reshist_state_so_factor ~ a2*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp + scale(household_income_2)
+cbcl_scr_syn_totprob_t_2 ~ b1*dim_yesno_q3_1 + b2*reshist_state_so_factor + c*LGBT_inclusive_ever_2tp + scale(age_year_2) + sex_br + race_black + race_white + ethnicity_hisp + scale(household_income_2)
 indirecteffectdiscrim := a1*b1
 indirecteffectstate := a2*b2
 totaleffect := c + a1*b1 + a2*b2
 '
 
-med_mod_SI_2Ms_long <- sem(mod_SI_2Ms_long, data = dataset_wide, se = "bootstrap", bootstrap = 500)
+med_mod_cbcl_t_2Ms_long <- sem(mod_cbcl_t_2Ms_long, data = dataset_wide, se = "bootstrap", bootstrap = 500)
 
-standardizedSolution(med_mod_SI_2Ms_long, type = "std.all") %>% htmlTable::htmlTable()
+standardizedSolution(med_mod_cbcl_t_2Ms_long, type = "std.lv") %>% htmlTable::htmlTable()
 
-plot_mod_SI_2Ms_long <- lavaanPlot(
-  model = med_mod_SI_2Ms_long,
+plot_mod_cbcl_t_2Ms_long <- lavaanPlot(
+  model = med_mod_cbcl_t_2Ms_long,
   node_options = list(
     shape = "box",
     fontname = "Arial",
@@ -178,7 +167,8 @@ plot_mod_SI_2Ms_long <- lavaanPlot(
   stars = "regress"
 )
 
-save_png(plot_mod_SI_2Ms_long, "../plots/mediation_SI.png" )
+save_png(plot_mod_cbcl_t_2Ms_long, "../plots/mediation_CBCL.png" )
 
-summary(med_mod_SI_2Ms_long)
+summary(med_mod_cbcl_t_2Ms_long)
 ```
+

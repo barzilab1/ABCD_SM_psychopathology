@@ -1,4 +1,5 @@
 library(readr)
+library(dplyr)
 
 load_instrument <- function(file_name, file_path) {
   
@@ -45,4 +46,24 @@ load_instrument <- function(file_name, file_path) {
   
   
   return(instrument)
+}
+
+
+create_ever_var <- function(data, search_term, new_col_name) {
+  data <- data %>%
+    mutate(!!new_col_name := apply(data[, grepl(search_term, colnames(data))], 1, function(x) {any(x == 1)*1}))
+  data <- data %>%
+    mutate(!!new_col_name := ifelse((is.na(get(new_col_name)) &
+                                       (apply(data[, which(grepl(search_term, colnames(data)))], 1, function(x) {any(x == 0)}))), 0, get(new_col_name)))
+  return(data)
+}
+
+
+cor_plot_function <- function(vars) {
+  cor = cor_auto(vars)
+  testRes = cor.mtest(vars, conf.level = 0.95)
+  plot <- corrplot(cor, p.mat = testRes$p, method = 'color', diag = FALSE, type = 'upper', #col = col,
+                   sig.level = c(0.001, 0.01, 0.05), pch.cex = 0.4,
+                   insig = 'label_sig', pch.col = 'grey20', order = 'original', tl.col = "black", tl.srt = 45, tl.cex = 0.35, cl.cex = 0.4, cl.ratio = 0.4)
+  return(plot)
 }

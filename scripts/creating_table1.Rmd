@@ -16,6 +16,7 @@ library(stats)
 library(readxl)
 library(jstable)
 library(tableone)
+source("../utility_fun.R")
 ```
 
 # Read data
@@ -25,121 +26,21 @@ dataset_wide <- read.csv("../outputs/dataset_SGM_wide_3tp.csv")
 
 # Ever: at any of 3 time points (baseline, 1y and 2y)
 ```{r}
-dataset_wide$LGBT_inclusive_ever <- apply(dataset_wide[,grepl("LGBT_inclusive_", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-dataset_wide$LGBT_inclusive_ever <- ifelse( (is.na(dataset_wide$LGBT_inclusive_ever) & 
-                                                     (apply(dataset_wide[,which(grepl("LGBT_inclusive_", colnames(dataset_wide)))], 1, function(x) {any(x == 0)}))), 
-                                                  0, dataset_wide$LGBT_inclusive_ever)
-
-dataset_wide$dim_yesno_q1_ever <- apply(dataset_wide[,grepl("dim_yesno_q1_", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-dataset_wide$dim_yesno_q1_ever <- ifelse((is.na(dataset_wide$dim_yesno_q1_ever) & 
-                                           (apply(dataset_wide[,which(grepl("dim_yesno_q1_", colnames(dataset_wide)))], 1, function(x) {any(x == 0)}))), 
-                                        0, dataset_wide$dim_yesno_q1_ever)
-
-
-dataset_wide$dim_yesno_q2_ever <- apply(dataset_wide[,grepl("dim_yesno_q2_", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-dataset_wide$dim_yesno_q2_ever <- ifelse((is.na(dataset_wide$dim_yesno_q2_ever) & 
-                                           (apply(dataset_wide[,which(grepl("dim_yesno_q2_", colnames(dataset_wide)))], 1, function(x) {any(x == 0)}))), 
-                                        0, dataset_wide$dim_yesno_q2_ever)
-
-dataset_wide$dim_yesno_q3_ever <- apply(dataset_wide[,grepl("dim_yesno_q3_", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-dataset_wide$dim_yesno_q3_ever <- ifelse((is.na(dataset_wide$dim_yesno_q3_ever) & 
-                                                     (apply(dataset_wide[,which(grepl("dim_yesno_q3_", colnames(dataset_wide)))], 1, function(x) {any(x == 0)}))), 
-                                                  0, dataset_wide$dim_yesno_q3_ever)
-
-dataset_wide$dim_yesno_q4_ever <- apply(dataset_wide[,grepl("dim_yesno_q4_", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-dataset_wide$dim_yesno_q4_ever <- ifelse((is.na(dataset_wide$dim_yesno_q4_ever) & 
-                                           (apply(dataset_wide[,which(grepl("dim_yesno_q4_", colnames(dataset_wide)))], 1, function(x) {any(x == 0)}))), 
-                                        0, dataset_wide$dim_yesno_q4_ever)
-
-
-dataset_wide$suicidality_y_ever <- apply(dataset_wide[,grepl("suicidality_y", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
+dataset_wide <- create_ever_var(data = dataset_wide, search_term = "LGBT_inclusive_", new_col_name = "LGBT_inclusive_ever")
+dataset_wide <- create_ever_var(data = dataset_wide, search_term = "dim_yesno_q1_", new_col_name = "dim_yesno_q1_ever")
+dataset_wide <- create_ever_var(data = dataset_wide, search_term = "dim_yesno_q2_", new_col_name = "dim_yesno_q2_ever")
+dataset_wide <- create_ever_var(data = dataset_wide, search_term = "dim_yesno_q3_", new_col_name = "dim_yesno_q3_ever")
+dataset_wide <- create_ever_var(data = dataset_wide, search_term = "dim_yesno_q4_", new_col_name = "dim_yesno_q4_ever")
 dataset_wide$SA_y_ever <- apply(dataset_wide[,grepl("SA_y", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
 dataset_wide$SI_y_ever <- apply(dataset_wide[,grepl("SI_y", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
 ```
 
 ```{r}
-# Diagnosis, symptom
 # bpm_y_scr_totalprob_r, bpm_y_scr_totalprob_t, cbcl_scr_syn_totprob_r, cbcl_scr_syn_totprob_t: mean
 dataset_wide$bpm_y_scr_totalprob_r_mean <- rowMeans(dataset_wide[,which(grepl("bpm_y_scr_totalprob_r", colnames(dataset_wide)))], na.rm = T)
 dataset_wide$bpm_y_scr_totalprob_t_mean <- rowMeans(dataset_wide[,which(grepl("bpm_y_scr_totalprob_t", colnames(dataset_wide)))], na.rm = T)
 dataset_wide$cbcl_scr_syn_totprob_r_mean <- rowMeans(dataset_wide[,which(grepl("cbcl_scr_syn_totprob_r", colnames(dataset_wide)))], na.rm = T)
 dataset_wide$cbcl_scr_syn_totprob_t_mean <- rowMeans(dataset_wide[,which(grepl("cbcl_scr_syn_totprob_t", colnames(dataset_wide)))], na.rm = T)
-
-
-dataset_wide$ksads_ODD_Diagnosis_ever <- apply(dataset_wide[,grepl("ksads_ODD_Diagnosis", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-dataset_wide$ksads_ODD_Diagnosis_ever <- ifelse((is.na(dataset_wide$ksads_ODD_Diagnosis_ever) & 
-                                                  (apply(dataset_wide[,which(grepl("ksads_ODD_Diagnosis", colnames(dataset_wide)))], 1, function(x) {any(x == 0)}))), 
-                                               0, dataset_wide$ksads_ODD_Diagnosis_ever)
-
-dataset_wide$ksads_CONDUCT_Diagnosis_ever <- apply(dataset_wide[,grepl("ksads_CONDUCT_Diagnosis", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-dataset_wide$ksads_CONDUCT_Diagnosis_ever <- ifelse((is.na(dataset_wide$ksads_CONDUCT_Diagnosis_ever) & 
-                                                      (apply(dataset_wide[,which(grepl("ksads_CONDUCT_Diagnosis", colnames(dataset_wide)))], 1, function(x) {any(x == 0)}))), 
-                                                   0, dataset_wide$ksads_CONDUCT_Diagnosis_ever)
-
-dataset_wide$ksads_any_externalizing_diagnosis_ever <- apply(dataset_wide[,grepl("ksads_any_externalizing_diagnosis", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-dataset_wide$ksads_any_externalizing_diagnosis_ever <- ifelse((is.na(dataset_wide$ksads_any_externalizing_diagnosis_ever) & 
-                                                                (apply(dataset_wide[,which(grepl("ksads_any_externalizing_diagnosis", colnames(dataset_wide)))], 1, function(x) {any(x == 0)}))), 
-                                                             0, dataset_wide$ksads_any_externalizing_diagnosis_ever)
-
-dataset_wide$ksads_PTSD_diagnosis_ever <- apply(dataset_wide[,grepl("ksads_PTSD_diagnosis", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-dataset_wide$ksads_PTSD_diagnosis_ever <- ifelse((is.na(dataset_wide$ksads_PTSD_diagnosis_ever) & 
-                                                   (apply(dataset_wide[,which(grepl("ksads_PTSD_diagnosis", colnames(dataset_wide)))], 1, function(x) {any(x == 0)}))), 
-                                                0, dataset_wide$ksads_PTSD_diagnosis_ever)
-
-dataset_wide$ksads_trauma_diagnosis_ever <- apply(dataset_wide[,grepl("ksads_trauma_diagnosis", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-dataset_wide$ksads_trauma_diagnosis_ever <- ifelse((is.na(dataset_wide$ksads_trauma_diagnosis_ever) & 
-                                                     (apply(dataset_wide[,which(grepl("ksads_trauma_diagnosis", colnames(dataset_wide)))], 1, function(x) {any(x == 0)}))), 
-                                                  0, dataset_wide$ksads_trauma_diagnosis_ever)
-
-dataset_wide$ksads_any_trauma_diagnosis_ever <- apply(dataset_wide[,grepl("ksads_any_trauma_diagnosis", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-dataset_wide$ksads_any_trauma_diagnosis_ever <- ifelse((is.na(dataset_wide$ksads_any_trauma_diagnosis_ever) & 
-                                                         (apply(dataset_wide[,which(grepl("ksads_any_trauma_diagnosis", colnames(dataset_wide)))], 1, function(x) {any(x == 0)}))), 
-                                                      0, dataset_wide$ksads_any_trauma_diagnosis_ever)
-
-dataset_wide$diagnosis_bipolar_y_ever <- apply(dataset_wide[,grepl("diagnosis_bipolar_y", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-dataset_wide$diagnosis_bipolar_y_ever <- ifelse((is.na(dataset_wide$diagnosis_bipolar_y_ever) & 
-                                                  (apply(dataset_wide[,which(grepl("diagnosis_bipolar_y", colnames(dataset_wide)))], 1, function(x) {any(x == 0)}))), 
-                                               0, dataset_wide$diagnosis_bipolar_y_ever)
-
-dataset_wide$diagnosis_anxiety_y_ever <- apply(dataset_wide[,grepl("diagnosis_anxiety_y", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-dataset_wide$diagnosis_anxiety_y_ever <- ifelse((is.na(dataset_wide$diagnosis_anxiety_y_ever) & 
-                                                  (apply(dataset_wide[,which(grepl("diagnosis_anxiety_y", colnames(dataset_wide)))], 1, function(x) {any(x == 0)}))), 
-                                               0, dataset_wide$diagnosis_anxiety_y_ever)
-
-dataset_wide$ksads_ADHD_Diagnosis_ever <- apply(dataset_wide[,grepl("ksads_ADHD_Diagnosis", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-dataset_wide$ksads_ADHD_Diagnosis_ever <- ifelse((is.na(dataset_wide$ksads_ADHD_Diagnosis_ever) & 
-                                                   (apply(dataset_wide[,which(grepl("ksads_ADHD_Diagnosis", colnames(dataset_wide)))], 1, function(x) {any(x == 0)}))), 
-                                                0, dataset_wide$ksads_ADHD_Diagnosis_ever)
-
-dataset_wide$diagnosis_depression_y_ever <- apply(dataset_wide[,grepl("diagnosis_depression_y", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-dataset_wide$diagnosis_depression_y_ever <- ifelse((is.na(dataset_wide$diagnosis_depression_y_ever) & 
-                                                     (apply(dataset_wide[,which(grepl("diagnosis_depression_y", colnames(dataset_wide)))], 1, function(x) {any(x == 0)}))), 
-                                                  0, dataset_wide$diagnosis_depression_y_ever)
-
-dataset_wide$diagnosis_ocd_y_ever <- apply(dataset_wide[,grepl("diagnosis_ocd_y", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-dataset_wide$diagnosis_ocd_y_ever <- ifelse((is.na(dataset_wide$diagnosis_ocd_y_ever) & 
-                                              (apply(dataset_wide[,which(grepl("diagnosis_ocd_y", colnames(dataset_wide)))], 1, function(x) {any(x == 0)}))), 
-                                           0, dataset_wide$diagnosis_ocd_y_ever)
-
-dataset_wide$diagnosis_ptsd_y_ever <- apply(dataset_wide[,grepl("diagnosis_ptsd_y", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-dataset_wide$diagnosis_ptsd_y_ever <- ifelse((is.na(dataset_wide$diagnosis_ptsd_y_ever) & 
-                                               (apply(dataset_wide[,which(grepl("diagnosis_ptsd_y", colnames(dataset_wide)))], 1, function(x) {any(x == 0)}))), 
-                                            0, dataset_wide$diagnosis_ptsd_y_ever)
-
-dataset_wide$ksads_ADHD_symptoms_sum_mean <- rowMeans(dataset_wide[,which(grepl("ksads_ADHD_symptoms_sum", colnames(dataset_wide)))], na.rm = T)
-dataset_wide$ksads_ADHD_exclude_attention_symptoms_sum_mean <- 
-  rowMeans(dataset_wide[,which(grepl("ksads_ADHD_exclude_attention_symptoms_sum", colnames(dataset_wide)))], na.rm = T)
-
-dataset_wide$ksads_ODD_symptoms_sum_mean <- rowMeans(dataset_wide[,which(grepl("ksads_ODD_symptoms_sum", colnames(dataset_wide)))], na.rm = T)
-
-dataset_wide$ksads_CONDUCT_symptoms_sum_mean <- rowMeans(dataset_wide[,which(grepl("ksads_CONDUCT_symptoms_sum", colnames(dataset_wide)))], na.rm = T)
-
-dataset_wide$ksads_externalizing_symptoms_sum_mean <- rowMeans(dataset_wide[,which(grepl("ksads_externalizing_symptoms_sum", colnames(dataset_wide)))], na.rm = T)
-
-dataset_wide$ksads_externalizing_exclude_attentation_symptoms_sum_mean <- 
-  rowMeans(dataset_wide[,which(grepl("ksads_externalizing_exclude_attentation_symptoms_sum", colnames(dataset_wide)))], na.rm = T)
-
-dataset_wide$ksads_ptsd_symptoms_summary_mean <- rowMeans(dataset_wide[,which(grepl("ksads_ptsd_symptoms_summary", colnames(dataset_wide)))], na.rm = T)
 
 dataset_wide <- dataset_wide %>% filter(!is.na(LGBT_inclusive_ever))
 ```
@@ -148,58 +49,19 @@ dataset_wide <- dataset_wide %>% filter(!is.na(LGBT_inclusive_ever))
 ```{r}
 # Main table 1
 vars_main <- dataset_wide %>% 
-  dplyr::select(
-    age_year_2,
-    sex_br,
-    race_white,
-    race_black,
-    race_aian,
-    race_nhpi,
-    race_asian,
-    race_other,
-    race_mixed,
-    ethnicity_hisp,
-    household_income_2,
-    dim_yesno_q3_ever,
-    reshist_state_so_factor,
-    dim_yesno_q1_ever,
-    dim_yesno_q2_ever,
-    dim_yesno_q4_ever,
-    cybb_phenx_harm_2,
-    peq_ss_relational_victim_2,
-    peq_ss_reputation_victim_2,
-    peq_ss_overt_victim_2,
-    reshist_addr1_adi_perc,
-    bpm_y_scr_totalprob_t_mean,
-    cbcl_scr_syn_totprob_t_mean,
-    SI_y_ever,
-    SA_y_ever
-    ) %>% names()
+  dplyr::select(matches(c("age_year_2", "sex_", "race_[wbanom]", "ethnicity", "income_2", "q3_e", "so_fac", "q[124]_e", "harm_2", "victim_2", "_perc$", "t_mean", "S[IA]_y_ever"))) %>% names()
 
+vars_main_factor <- dataset_wide %>% 
+  dplyr::select(matches(c("sex_", "race_[wbanom]", "ethnicity", "q[1-4]_e", "S[IA]_y_ever"))) %>% names()
+```
+
+``` {r}
 write.csv(print(
   CreateTableOne(
     data = dataset_wide,
     vars = vars_main,
     strata = "LGBT_inclusive_ever",
-    factorVars = c(
-      "sex_br",
-      "race_white",
-      "race_black",
-      "race_aian",
-      "race_nhpi",
-      "race_asian",
-      "race_other",
-      "race_mixed",
-      "ethnicity_hisp",
-      "dim_yesno_q1_ever",
-      "dim_yesno_q2_ever",
-      "dim_yesno_q3_ever",
-      "dim_yesno_q4_ever",
-      "cybb_phenx_harm_2",
-      "suicidality_y_ever",
-      "SA_y_ever",
-       "SI_y_ever"
-    ),
+    factorVars = vars_main_factor,
     includeNA = T,
     addOverall = T
   ),
@@ -224,91 +86,19 @@ p_values <- p_values %>%
 writexl::write_xlsx(p_values, "../outputs/table1_main_adjp_091422.xlsx")
 ```
 
+# Table S1
 ```{r}
-# Supplement table S1
 dataset_long <- read.csv("../outputs/dataset_SGM_3tp.csv")
 dataset_long <- dataset_long %>% filter(src_subject_id %in% dataset_wide$src_subject_id)
+dataset_long$eventname <- factor(dataset_long$eventname, c("bl", "1", "2"))
 CreateTableOne(
     data = dataset_long,
     vars = c("age_year", "kbi_y_sex_orient", "kbi_y_trans_id", "LGBT_inclusive"),
     strata = "eventname",
-    factorVars = c("kbi_y_sex_orient", "kbi_y_trans_id", "LGBT_inclusive"), #"LGBT"
+    factorVars = c("kbi_y_sex_orient", "kbi_y_trans_id", "LGBT_inclusive"),
     includeNA = T
   )
 ```
-
-```{r}
-# Supplement table S2
-vars_supp <- dataset_wide %>%
-  dplyr::select(
-    ksads_ODD_Diagnosis_ever,
-    ksads_CONDUCT_Diagnosis_ever,
-    ksads_any_externalizing_diagnosis_ever,
-    ksads_PTSD_diagnosis_ever,
-    ksads_trauma_diagnosis_ever,
-    ksads_any_trauma_diagnosis_ever,
-    diagnosis_bipolar_y_ever,
-    diagnosis_anxiety_y_ever,
-    diagnosis_depression_y_ever,
-    ksads_ADHD_symptoms_sum_mean,
-    ksads_ADHD_exclude_attention_symptoms_sum_mean,
-    ksads_ODD_symptoms_sum_mean,
-    ksads_CONDUCT_symptoms_sum_mean,
-    ksads_externalizing_symptoms_sum_mean,
-    ksads_externalizing_exclude_attentation_symptoms_sum_mean,
-    ksads_ptsd_symptoms_summary_mean,
-    suicidality_y_ever,
-    bpm_y_scr_totalprob_r_mean,
-    cbcl_scr_syn_totprob_r_mean
-  ) %>% names()
-
-write.csv(print(
-  CreateTableOne(
-    data = dataset_wide,
-    vars = vars_supp,
-    strata = "LGBT_inclusive_ever",
-    factorVars = c(
-      "ksads_ODD_Diagnosis_ever",
-      "ksads_CONDUCT_Diagnosis_ever",
-      "ksads_any_externalizing_diagnosis_ever",
-      "ksads_PTSD_diagnosis_ever",
-      "ksads_trauma_diagnosis_ever",
-      "ksads_any_trauma_diagnosis_ever",
-      "diagnosis_bipolar_y_ever",
-      "diagnosis_anxiety_y_ever",
-      "diagnosis_depression_y_ever",
-      "suicidality_y_ever"
-    ),
-    includeNA = T,
-    addOverall = T
-  ),
-  missing = T,
-  pDigits = 5
-),
-"../outputs/table1_supp_091422.csv")
-```
-
-```{r}
-# Sheet 2: p-values from CreateTableOne
-p_values_supp <- "../outputs/table1_supp_091422.xlsx" %>% read_excel(sheet = 2)
-
-p_values_supp <- p_values_supp %>%
-  mutate(adj_p = round(p.adjust(p, method = "fdr", ), 3))
-
-writexl::write_xlsx(p_values_supp, "../outputs/table1_supp_adjp_091422.xlsx")
-```
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
