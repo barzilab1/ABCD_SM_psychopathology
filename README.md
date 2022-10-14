@@ -23,9 +23,9 @@
 
 1. update the [config.R](config.R) to reflect the location of the instruments above.
 2. In the data-scripts folder, run scripts in any order. These scripts go over the abcd instruments and create new variables and datasets that are placed in the “outputs” folder.
-3. Run the [merging.R](scripts/merging.R) and [merging_wide_data.R](/scripts/merging_wide_data.R) script to create the long and wide format dataset.
-4. Run the [create_table1.Rmd](/scripts/create_table1.Rmd) to generate table 1 of the main paper and supplement.
-5. Run the [correlation_plot.Rmd](/scripts/correlation_plot.Rmd) to generate correlation plot.
-5. Run the [creating_plots.Rmd](/scripts/creating_plots.Rmd) to generate plots.
-6. Run the [mixed_models.Rmd](/script/mixed_models.Rmd) for mixed models.
-7. Run the [mediation.Rmd](/script/mediation.Rmd) for mediation analyses.
+3. Run the [merging.R](scripts/merging.R) and [merging_wide_data.R](scripts/merging_wide_data.R) script to create the long and wide format dataset.
+4. Run the [create_table1.Rmd](scripts/create_table1.Rmd) to generate table 1 of the main paper and supplement.
+5. Run the [correlation_plot.Rmd](scripts/correlation_plot.Rmd) to generate correlation plot.
+5. Run the [creating_plots.Rmd](scripts/creating_plots.Rmd) to generate plots.
+6. Run the [mixed_models.Rmd](scripts/mixed_models.Rmd) for mixed models.
+7. Run the [mediation.Rmd](scripts/mediation.Rmd) for mediation analyses.
