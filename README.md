@@ -7,22 +7,16 @@
 1. pdem02
 2. abcd_lpds01
 3. abcd_ydmes01
-4. abcd_yle01
-5. acspsw03
-6. abcd_cb01
-7. abcd_lpksad01
-8. abcd_sscey01
-9. abcd_rhds01
-10. abcd_ant01
-11. abcd_ssphp01
-12. abcd_ssphy01
-13. abcd_yksad01
-14. abcd_ksad01
-15. abcd_cbcls01
-16. abcd_mhy02
-17. abcd_yssbpm01
-18. abcd_ksad501
-19. abcd_lt01
+4. acspsw03
+5. abcd_cb01 
+6. abcd_lpksad01
+7. abcd_rhds01
+8. abcd_yksad01
+9. abcd_cbcls01
+10. abcd_mhy02
+11. abcd_yssbpm01
+12. abcd_ksad501
+13. abcd_lt01
 
 
 #### How to run the code:
