@@ -21,9 +21,8 @@ source("../utility_fun.R")
 data_long <- read.csv("../outputs/dataset_SGM_long_mm.csv")
 ```
 
-# Correlation at 1 year
+# Correlation at 1 year and 2 year
 ```{r}
-png("../plots/correlation_1y.png", units="in", width=3, height=2.2, res=320)
 vars_1y <-
   data_long %>% filter(eventname == 1) %>%
   dplyr::select(
@@ -42,13 +41,6 @@ vars_1y <-
     ADI = reshist_addr1_adi_perc
   )
 
-cor_plot_function(vars_1y)
-dev.off()
-```
-
-# Correlation at 2 year
-```{r}
-png("../plots/correlation_2y.png", units="in", width=3, height=2.2, res=320)
 vars_2y <-
   data_long %>% filter(eventname == 2) %>%
   dplyr::select(
@@ -67,6 +59,11 @@ vars_2y <-
     ADI = reshist_addr1_adi_perc
   )
 
+png("../plots/correlation_combined.png", units="in", width=6, height=3, res=320)
+
+par(mfrow = c(1, 2))
+cor_plot_function(vars_1y)
 cor_plot_function(vars_2y)
+
 dev.off()
 ```
