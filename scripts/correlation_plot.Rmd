@@ -58,24 +58,6 @@ vars_2y <-
     `discrimination - weight` = dim_yesno_q4,
     ADI = reshist_addr1_adi_perc
   )
-
-# png("../plots/correlation_combined.png", units="in", width=6, height=3, res=320)
-
-# par(mfrow = c(1, 2))
-# par(mar=c(2.5,2.5,1,1))
-nf <- layout(
-  matrix(c(1,1,2,3), ncol=2, byrow=TRUE), 
-  widths=c(4,4), 
-  heights=c(2,5)
-)
-plot.new()
-text(0.5, 0.5, "Correlation at 1-year follow-up",cex=1,font=0.7)
-
-plot.new()
-cor_plot_function(vars_1y)
-
-cor_plot_function(vars_2y)
-# dev.off()
 ```
 
 ```{r}
@@ -86,7 +68,7 @@ layout.matrix <- matrix(c(1,2,3,4,5,6), nrow = 2, ncol = 3, byrow = T)
 layout(mat = layout.matrix,
        heights = c(2, 10), # Heights of the 2 rows
        widths = c(15, 1, 15)) # Widths of the 3 columns
-# layout.show(6)
+
 plot.new()
 text(0.5,0.5, "Correlation at 1-year follow-up",cex=0.6,font=0.6)
 plot.new()
@@ -98,5 +80,4 @@ cor_plot_function(vars_1y)
 plot.new()
 cor_plot_function(vars_2y)
 dev.off()
-
 ```
