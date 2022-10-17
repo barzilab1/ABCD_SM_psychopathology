@@ -93,7 +93,7 @@ plot_1 <- ggplot(plot_bpm_at10, aes(x = reshist_state_so_factor_at10, y = Mean, 
   annotate("segment", x = 1, xend = 2, y = 61.5, yend = 61.5, size = 0.22) +
   scale_y_continuous(limits=c(40, 62), oob = rescale_none)
 
-ggsave(filename = "../plots/BMP_state.png", width = 5, height = 4, dpi = 320)
+# ggsave(filename = "../plots/BMP_state.png", width = 5, height = 4, dpi = 320)
 ```
 
 ## Individual
@@ -152,14 +152,14 @@ plot_2 <- ggplot(plot_bpm_dim, aes(x = dim_yesno_q3_ever, y = Mean, fill = dim_y
         aspect.ratio = 1/0.4,
         plot.tag = element_text(size = 9),
         plot.tag.position = c(0.05, 0.95)) +
-  scale_fill_manual("Individual experience of \n         discrimination \n         against SGM", values = c("Yes" = "#E6AB02", "No" = "#1B9E77")) +
+  scale_fill_manual("Individual experience of        \n         discrimination        \n         against SGM", values = c("Yes" = "#E6AB02", "No" = "#1B9E77")) +
   geom_text(data = text_label_dim,
             mapping = aes(x = x, y = y, label = label),
             size = 2.2, face = "bold") +
   annotate("segment", x = 1, xend = 2, y = 61.5, yend = 61.5, size = 0.2) +
   scale_y_continuous(limits=c(40, 62), oob = rescale_none)
 
-ggsave("../plots/BMP_individual.png", width = 5, height = 4, dpi = 320)
+# ggsave("../plots/BMP_individual.png", width = 5, height = 4, dpi = 320)
 ```
 
 
@@ -229,7 +229,7 @@ plot_3 <- ggplot(plot_state_SI, aes(x = reshist_state_so_factor_at10, y = sui.pr
             size = 2, face = "bold") +
   annotate("segment", x = 1, xend = 2, y = 46.8, yend = 46.8, size = 0.2)
 
-ggsave("../plots/SI_state.png", width = 5, height = 4, dpi = 320)
+# ggsave("../plots/SI_state.png", width = 5, height = 4, dpi = 320)
 ```
 
 ## Individual
@@ -290,14 +290,14 @@ plot_4 <- ggplot(plot_dim_SI, aes(x = dim_yesno_q3_ever, y = sui.prop, fill = di
         aspect.ratio = 1/0.4,
         plot.tag = element_text(size = 9),
         plot.tag.position = c(0.05, 0.95)) +
-  scale_fill_manual("Individual experience of \n         discrimination \n         against SGM", values = c("Yes" = "#E6AB02", "No" = "#1B9E77")) +
+  scale_fill_manual("Individual experience of        \n         discrimination        \n         against SGM", values = c("Yes" = "#E6AB02", "No" = "#1B9E77")) +
   geom_text(data    = text_label_dim_SI,
             mapping = aes(x = x, y = y, label = label),
             size = 2.2,
             face = "bold") +
   annotate("segment", x = 1, xend = 2, y = 58.5, yend = 58.5, size = 0.25)
 
-ggsave("../plots/SI_individual.png", width = 5, height = 4, dpi = 320)
+# ggsave("../plots/SI_individual.png", width = 5, height = 4, dpi = 320)
 ```
 
 # SA
@@ -367,7 +367,7 @@ plot_5 <- ggplot(plot_state_SA, aes(x = reshist_state_so_factor_at10, y = sui.pr
             face = "bold") +
   annotate("segment", x = 1, xend = 2, y = 18.1, yend = 18.1, size = 0.2)
 
-ggsave("../plots/SA_state.png", width = 5, height = 4, dpi = 320)
+# ggsave("../plots/SA_state.png", width = 5, height = 4, dpi = 320)
 ```
 
 ## Individual
@@ -429,20 +429,21 @@ plot_6 <- ggplot(plot_dim_SA, aes(x = dim_yesno_q3_ever, y = sui.prop, fill = di
         aspect.ratio = 1/0.4,
         plot.tag = element_text(size = 9),
         plot.tag.position = c(0.05, 0.95)) +
-  scale_fill_manual("Individual experience of \n         discrimination \n         against SGM", values = c("Yes" = "#E6AB02", "No" = "#1B9E77")) +
+  scale_fill_manual("Individual experience of        \n         discrimination        \n         against SGM", values = c("Yes" = "#E6AB02", "No" = "#1B9E77")) +
   geom_text(data    = text_label_dim_SA,
             mapping = aes(x = x, y = y, label = label),
             size = 2.2,
             face = "bold") +
   annotate("segment", x = 1, xend = 2, y = 18.6, yend = 18.6, size = 0.2)
 
-ggsave("../plots/SA_individual.png", width = 5, height = 4, dpi = 320)
+# ggsave("../plots/SA_individual.png", width = 5, height = 4, dpi = 320)
 ```
 
 # Merge plots
+
 ```{r}
-# BPM, SI, SA state bias
 ggarrange(
+  ggarrange(
   plot_1 +
     theme(plot.margin = margin(r = 1, l = 1)),
   NULL,
@@ -456,13 +457,9 @@ ggarrange(
   widths = c(1, 0.05, 1, 0.05, 1),
   heights = c(5,5,5,5,5),
   common.legend = T,
-  legend = "right")
-
-ggsave("../plots/interaction_plots_state_main.png", width = 5, height = 3, dpi = 320)
-
-
-# BPM, SI, SA individual discrimination
-ggarrange(
+  legend = "right"),
+  
+  ggarrange(
   plot_2 +
     theme(plot.margin = margin(r = 1, l = 1)),
   NULL,
@@ -476,7 +473,11 @@ ggarrange(
   widths = c(1, 0.05, 1, 0.05, 1),
   heights = c(5,5,5,5,5),
   common.legend = T,
-  legend = "right")
+  legend = "right"),
+  
+  nrow = 2
+)
 
-ggsave("../plots/interaction_plots_individual_main.png", width = 5, height = 2, dpi = 320)
+ggsave("../plots/interaction_plots_main.png", width = 6, height = 5, dpi = 320)
 ```
+
