@@ -49,10 +49,10 @@ dataset_wide <- dataset_wide %>% filter(!is.na(LGBT_inclusive_ever))
 ```{r}
 # Main table 1
 vars_main <- dataset_wide %>% 
-  dplyr::select(matches(c("age_year_2", "sex_", "race_[wbanom]", "ethnicity", "income_2", "q3_e", "so_fac", "q[124]_e", "harm_2", "victim_2", "_perc$", "t_mean", "S[IA]_y_ever"))) %>% names()
+  dplyr::select(matches(c("age_year_2", "sex_", "race_[wban]", "ethnicity", "income_2", "q3_e", "so_fac", "q[124]_e", "harm_2", "bully", "t_mean", "S[IA]_y_ever"))) %>% names() #"victim_2", "race_[wbanom], "_perc$", 
 
 vars_main_factor <- dataset_wide %>% 
-  dplyr::select(matches(c("sex_", "race_[wbanom]", "ethnicity", "q[1-4]_e", "S[IA]_y_ever"))) %>% names()
+  dplyr::select(matches(c("sex_", "race_[wban]", "ethnicity", "q[1-4]_e", "harm_2", "S[IA]_y_ever"))) %>% names()
 ```
 
 ``` {r}
@@ -68,7 +68,7 @@ write.csv(print(
   missing = T,
   pDigits = 5
 ),
-"../outputs/table1_main_091422.csv")
+"../outputs/table1_main_0207232.csv")
 
 # Get number of missing values (N) for each variable (% is from CreateTableOne function)
 print(questionr::freq.na(data = dataset_wide, vars_main))
@@ -78,12 +78,12 @@ print(questionr::freq.na(data = dataset_wide, vars_main))
 # Calculate adjusted p-values
 # Sheet 2: p-values from CreateTableOne
 
-p_values <- "../outputs/table1_main_091422.xlsx" %>% read_excel(sheet = 2)
+p_values <- "../outputs/table1_main_0207232.xlsx" %>% read_excel(sheet = 2)
 
 p_values <- p_values %>%
   mutate(adj_p = round(p.adjust(p, method = "fdr", ), 3))
 
-writexl::write_xlsx(p_values, "../outputs/table1_main_adjp_091422.xlsx")
+writexl::write_xlsx(p_values, "../outputs/table1_main_adjp_020723.xlsx")
 ```
 
 # Table S1

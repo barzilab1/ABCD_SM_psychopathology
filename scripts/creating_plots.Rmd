@@ -41,6 +41,7 @@ p2_10 <- t.test(plot_bpm_at10_test$bpm_y_scr_totalprob_t_mean[plot_bpm_at10_test
                 plot_bpm_at10_test$bpm_y_scr_totalprob_t_mean[plot_bpm_at10_test$LGBT_inclusive_ever == 1 & plot_bpm_at10_test$reshist_state_so_factor_at10 == 1])$p.value
 
 p_10_adj <- round(p.adjust(c(p1_10, p2_10), method = "fdr"), 4)
+round(c(p1_10, p2_10),3)
 ```
 
 ```{r}
@@ -54,6 +55,7 @@ plot_bpm_at10 <- data_wide %>%
                    SE = (sd(bpm_y_scr_totalprob_t_mean, na.rm=TRUE))/(sqrt(N)),
                    CI = 1.96*SE) %>% 
   mutate(LGBT_inclusive_ever = recode(LGBT_inclusive_ever, `1` = "SGM", `0` = "Non-SGM"),
+         reshist_state_so_factor_at10 = factor(reshist_state_so_factor_at10, c("0", "1")),
          reshist_state_so_factor_at10 = recode(reshist_state_so_factor_at10, `1` = "High", `0` = "Medium-Low"))
 
 # Label for significance level
@@ -69,22 +71,22 @@ plot_1 <- ggplot(plot_bpm_at10, aes(x = reshist_state_so_factor_at10, y = Mean, 
   facet_wrap(~ LGBT_inclusive_ever, nrow = 1) +
   geom_errorbar(aes(ymin = Mean - CI, ymax = Mean + CI), position = position_dodge(0.9), width = 0.2, size = 0.2) +
   xlab("") + ylab("BPM T scores (mean, 95% CI)") +
-  labs(tag = "A.") +
+  # labs(tag = "A.") +
   ggtitle("Psychopathology") +
   theme(plot.title = element_text(hjust = 0.5), panel.grid.major.x = element_blank()) +
   theme(axis.text.x = element_blank(),
-        axis.text.y = element_text(size = 6),
+        axis.text.y = element_text(size = 7),
         axis.title.x = element_blank(),
-        axis.title.y = element_text(size = 5.5),
-        plot.title = element_text(size = 6, hjust = 0.5, colour = "black", face = "bold"),
-        strip.text = element_text(size = 6, color = "dark green", face = "bold"),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 8.5, hjust = 0.5, colour = "black", face = "bold"),
+        strip.text = element_text(size = 6.5, color = "dark green", face = "bold"),
         axis.ticks.x = element_blank(),
         axis.ticks = element_line(size = 0.2),
         legend.position = "top",
-        legend.title = element_text(size = 6),
-        legend.text = element_text(size = 6),
+        legend.title = element_text(size = 8, face = "bold"),
+        legend.text = element_text(size = 6.5, face = "bold"),
         aspect.ratio = 1/0.4,
-        plot.tag = element_text(size = 9),
+        plot.tag = element_text(size = 14),
         plot.tag.position = c(0.05, 0.95)) +
   scale_fill_manual("State level indicators of bias \n  against sexual orientation", values = c("High" = "coral2", "Medium-Low" = "cyan4")) +
   geom_text(data    = text_label_at10,
@@ -93,7 +95,7 @@ plot_1 <- ggplot(plot_bpm_at10, aes(x = reshist_state_so_factor_at10, y = Mean, 
   annotate("segment", x = 1, xend = 2, y = 61.5, yend = 61.5, size = 0.22) +
   scale_y_continuous(limits=c(40, 62), oob = rescale_none)
 
-# ggsave(filename = "../plots/BMP_state.png", width = 5, height = 4, dpi = 320)
+ggsave(filename = "../plots/BMP_state.png", width = 5, height = 4, dpi = 620)
 ```
 
 ## Individual
@@ -106,6 +108,7 @@ p2_dim <- t.test(data_wide$bpm_y_scr_totalprob_t_mean[data_wide$LGBT_inclusive_e
                  data_wide$bpm_y_scr_totalprob_t_mean[data_wide$LGBT_inclusive_ever == 1 & data_wide$dim_yesno_q3_ever == 1])$p.value
 
 p_dim_adj <- round(p.adjust(c(p1_dim, p2_dim), method = "fdr"), 5)
+round(c(p1_dim, p2_dim), 3)
 ```
 
 ```{r}
@@ -135,22 +138,22 @@ plot_2 <- ggplot(plot_bpm_dim, aes(x = dim_yesno_q3_ever, y = Mean, fill = dim_y
   facet_wrap(~ LGBT_inclusive_ever, nrow = 1) +
   geom_errorbar(aes(ymin = Mean - CI, ymax = Mean + CI), position = position_dodge(0.9), width = 0.2, size = 0.2) +
   xlab("") + ylab("BPM T scores (mean, 95% CI)") +
-  labs(tag = "D.") +
+  # labs(tag = "D.") +
   ggtitle("Psychopathology") +
   theme(plot.title = element_text(hjust = 0.5), panel.grid.major.x = element_blank()) +
   theme(axis.text.x = element_blank(),
-        axis.text.y = element_text(size = 6),
+        axis.text.y = element_text(size = 7),
         axis.title.x = element_blank(),
-        axis.title.y = element_text(size = 5.5),
-        plot.title = element_text(size = 6, hjust = 0.5, colour = "black", face = "bold"),
-        strip.text = element_text(size = 6, color = "dark green", face = "bold"),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 8.5, hjust = 0.5, colour = "black", face = "bold"),
+        strip.text = element_text(size = 6.5, color = "dark green", face = "bold"),
         axis.ticks.x = element_blank(),
         axis.ticks = element_line(size = 0.2),
         legend.position = "top",
-        legend.title = element_text(size = 6),
-        legend.text = element_text(size = 6),
+        legend.title = element_text(size = 8, face = "bold"),
+        legend.text = element_text(size = 6.5, face = "bold"),
         aspect.ratio = 1/0.4,
-        plot.tag = element_text(size = 9),
+        plot.tag = element_text(size = 14),
         plot.tag.position = c(0.05, 0.95)) +
   scale_fill_manual("Individual experience of        \n         discrimination        \n         against SGM", values = c("Yes" = "#E6AB02", "No" = "#1B9E77")) +
   geom_text(data = text_label_dim,
@@ -159,7 +162,7 @@ plot_2 <- ggplot(plot_bpm_dim, aes(x = dim_yesno_q3_ever, y = Mean, fill = dim_y
   annotate("segment", x = 1, xend = 2, y = 61.5, yend = 61.5, size = 0.2) +
   scale_y_continuous(limits=c(40, 62), oob = rescale_none)
 
-# ggsave("../plots/BMP_individual.png", width = 5, height = 4, dpi = 320)
+ggsave("../plots/BMP_individual.png", width = 5, height = 4, dpi = 620)
 ```
 
 
@@ -169,6 +172,7 @@ plot_2 <- ggplot(plot_bpm_dim, aes(x = dim_yesno_q3_ever, y = Mean, fill = dim_y
 p1_state_SI <- chisq.test(with(data_wide %>% filter(LGBT_inclusive_ever == 0), table(SI_y_ever, reshist_state_so_factor_at10)))$p.value
 p2_state_SI <- chisq.test(with(data_wide %>% filter(LGBT_inclusive_ever == 1), table(SI_y_ever, reshist_state_so_factor_at10)))$p.value
 p_state_SI_adj <- round(p.adjust(c(p1_state_SI, p2_state_SI), method = "fdr"), 5)
+round(c(p1_state_SI, p2_state_SI), 3)
 ```
 
 ```{r}
@@ -190,6 +194,7 @@ plot_state_SI <- data_wide %>%
   # add 95%CI
   mutate(CI = 1.96*SE) %>% 
   mutate(LGBT_inclusive_ever = recode(LGBT_inclusive_ever, `1` = "SGM", `0` = "Non-SGM"),
+         reshist_state_so_factor_at10 = factor(reshist_state_so_factor_at10, c("0", "1")),
          reshist_state_so_factor_at10 = recode(reshist_state_so_factor_at10, `1` = "High", `0` = "Medium-Low"))
 
 
@@ -205,23 +210,23 @@ plot_3 <- ggplot(plot_state_SI, aes(x = reshist_state_so_factor_at10, y = sui.pr
   facet_wrap(~ LGBT_inclusive_ever, nrow = 1) +
   geom_errorbar(aes(ymin = sui.prop - CI, ymax = sui.prop + CI), position = position_dodge(0.9), width = 0.2, size = 0.2) +
   xlab("") + ylab("") +
-  labs(tag = "B.") +
+  # labs(tag = "B.") +
   ggtitle("Suicide Ideation") +
   scale_y_continuous(labels = function(x) paste0(x, "%"), breaks = seq(0, 50, 10), limits = c(0,50)) +
   theme(plot.title = element_text(hjust = 0.5), panel.grid.major.x = element_blank()) +
   theme(axis.text.x = element_blank(),
-        axis.text.y = element_text(size = 6),
+        axis.text.y = element_text(size = 7),
         axis.title.x = element_blank(),
-        axis.title.y = element_text(size = 5),
-        plot.title = element_text(size = 6, hjust = 0.5, colour = "black", face = "bold"),
-        strip.text = element_text(size = 5.5, color = "dark green", face = "bold"),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 8.5, hjust = 0.5, colour = "black", face = "bold"),
+        strip.text = element_text(size = 6.5, color = "dark green", face = "bold"),
         axis.ticks.x = element_blank(),
         axis.ticks=element_line(size=0.2),
         legend.position = "top",
-        legend.title = element_text(size = 6),
-        legend.text = element_text(size = 6),
+        legend.title = element_text(size = 8, face = "bold"),
+        legend.text = element_text(size = 6.5, face = "bold"),
         aspect.ratio = 1/0.4,
-        plot.tag = element_text(size = 9),
+        plot.tag = element_text(size = 14),
         plot.tag.position = c(0.05, 0.95)) +
   scale_fill_manual("State level indicators of bias \n  against sexual orientation", values = c("High" = "coral2", "Medium-Low" = "cyan4")) +
   geom_text(data    = text_label_state_SI,
@@ -229,7 +234,7 @@ plot_3 <- ggplot(plot_state_SI, aes(x = reshist_state_so_factor_at10, y = sui.pr
             size = 2, face = "bold") +
   annotate("segment", x = 1, xend = 2, y = 46.8, yend = 46.8, size = 0.2)
 
-# ggsave("../plots/SI_state.png", width = 5, height = 4, dpi = 320)
+ggsave("../plots/SI_state.png", width = 5, height = 4, dpi = 620)
 ```
 
 ## Individual
@@ -237,6 +242,7 @@ plot_3 <- ggplot(plot_state_SI, aes(x = reshist_state_so_factor_at10, y = sui.pr
 p1_dim_SI <- chisq.test(with(data_wide %>% filter(LGBT_inclusive_ever == 0), table(SI_y_ever, dim_yesno_q3_ever)))$p.value
 p2_dim_SI <- chisq.test(with(data_wide %>% filter(LGBT_inclusive_ever == 1), table(SI_y_ever, dim_yesno_q3_ever)))$p.value
 p_dim_SI_adj <- round(p.adjust(c(p1_dim_SI, p2_dim_SI), method = "fdr"), 5)
+round(c(p1_dim_SI, p2_dim_SI),3)
 ```
 
 ```{r}
@@ -272,23 +278,23 @@ plot_4 <- ggplot(plot_dim_SI, aes(x = dim_yesno_q3_ever, y = sui.prop, fill = di
   facet_wrap(~ LGBT_inclusive_ever, nrow = 1) +
   geom_errorbar(aes(ymin = sui.prop - CI, ymax = sui.prop + CI), position = position_dodge(0.9), width = 0.2, size = 0.2) +
   xlab("") + ylab("") +
-  labs(tag = "E.") +
+  # labs(tag = "E.") +
   ggtitle("Suicide Ideation") +
   scale_y_continuous(labels = function(x) paste0(x, "%"), breaks = seq(0,60,10), limits = c(0,60)) +
   theme(plot.title = element_text(hjust = 0.5), panel.grid.major.x = element_blank()) +
   theme(axis.text.x = element_blank(),
-        axis.text.y = element_text(size = 6),
+        axis.text.y = element_text(size = 7),
         axis.title.x = element_blank(),
-        axis.title.y = element_text(size = 5),
-        plot.title = element_text(size = 6, hjust = 0.5, colour = "black", face = "bold"),
-        strip.text = element_text(size = 5.5, color = "dark green", face = "bold"),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 8.5, hjust = 0.5, colour = "black", face = "bold"),
+        strip.text = element_text(size = 6.5, color = "dark green", face = "bold"),
         axis.ticks.x = element_blank(),
         axis.ticks=element_line(size=0.2),
         legend.position = "top",
-        legend.title = element_text(size = 6),
-        legend.text = element_text(size = 6),
+        legend.title = element_text(size = 8, face = "bold"),
+        legend.text = element_text(size = 6.5, face = "bold"),
         aspect.ratio = 1/0.4,
-        plot.tag = element_text(size = 9),
+        plot.tag = element_text(size = 14),
         plot.tag.position = c(0.05, 0.95)) +
   scale_fill_manual("Individual experience of        \n         discrimination        \n         against SGM", values = c("Yes" = "#E6AB02", "No" = "#1B9E77")) +
   geom_text(data    = text_label_dim_SI,
@@ -297,7 +303,7 @@ plot_4 <- ggplot(plot_dim_SI, aes(x = dim_yesno_q3_ever, y = sui.prop, fill = di
             face = "bold") +
   annotate("segment", x = 1, xend = 2, y = 58.5, yend = 58.5, size = 0.25)
 
-# ggsave("../plots/SI_individual.png", width = 5, height = 4, dpi = 320)
+ggsave("../plots/SI_individual.png", width = 5, height = 4, dpi = 620)
 ```
 
 # SA
@@ -306,6 +312,7 @@ plot_4 <- ggplot(plot_dim_SI, aes(x = dim_yesno_q3_ever, y = sui.prop, fill = di
 p1_state_SA <- chisq.test(with(data_wide %>% filter(LGBT_inclusive_ever == 0), table(SA_y_ever, reshist_state_so_factor_at10)))$p.value
 p2_state_SA <- chisq.test(with(data_wide %>% filter(LGBT_inclusive_ever == 1), table(SA_y_ever, reshist_state_so_factor_at10)))$p.value
 p_state_SA_adj <- round(p.adjust(c(p1_state_SA, p2_state_SA), method = "fdr"), 5)
+round(c(p1_state_SA, p2_state_SA), 3)
 ```
 
 ```{r}
@@ -327,6 +334,7 @@ plot_state_SA <- data_wide %>%
   # add 95%CI
   mutate(CI = 1.96*SE) %>% 
   mutate(LGBT_inclusive_ever = recode(LGBT_inclusive_ever, `1` = "SGM", `0` = "Non-SGM"),
+         reshist_state_so_factor_at10 = factor(reshist_state_so_factor_at10, c("0", "1")),
          reshist_state_so_factor_at10 = recode(reshist_state_so_factor_at10, `1` = "High", `0` = "Medium-Low"))
 
 
@@ -342,23 +350,23 @@ plot_5 <- ggplot(plot_state_SA, aes(x = reshist_state_so_factor_at10, y = sui.pr
   facet_wrap(~ LGBT_inclusive_ever, nrow = 1) +
   geom_errorbar(aes(ymin = sui.prop - CI, ymax = sui.prop + CI), position = position_dodge(0.9), width = 0.2, size = 0.2) +
   xlab("") + ylab("") +
-  labs(tag = "C.") +
+  # labs(tag = "C.") +
   ggtitle("Suicide Attempt") +
   scale_y_continuous(labels = function(x) paste0(x, "%"), breaks = c(0,5,10,15,20), limits = c(0,20)) +
   theme(plot.title = element_text(hjust = 0.5), panel.grid.major.x = element_blank()) +
   theme(axis.text.x = element_blank(),
-        axis.text.y = element_text(size = 6),
+        axis.text.y = element_text(size = 7),
         axis.title.x = element_blank(),
-        axis.title.y = element_text(size = 5),
-        plot.title = element_text(size = 5.5, hjust = 0.5, colour = "black", face = "bold"),
-        strip.text = element_text(size = 5.5, color = "dark green", face = "bold"),
+        axis.title.y = element_text(size = 8),
+        plot.title = element_text(size = 8.5, hjust = 0.5, colour = "black", face = "bold"),
+        strip.text = element_text(size = 6.5, color = "dark green", face = "bold"),
         axis.ticks.x = element_blank(),
         axis.ticks=element_line(size=0.2),
         legend.position = "top",
-        legend.title = element_text(size = 6),
-        legend.text = element_text(size = 6),
+        legend.title = element_text(size = 8, face = "bold"),
+        legend.text = element_text(size = 6.5, face = "bold"),
         aspect.ratio = 1/0.4,
-        plot.tag = element_text(size = 9),
+        plot.tag = element_text(size = 14),
         plot.tag.position = c(0.05, 0.95)) +
   scale_fill_manual("State level indicators of bias \n  against sexual orientation", values = c("High" = "coral2", "Medium-Low" = "cyan4")) + 
   geom_text(data = text_label_state_SA,
@@ -367,7 +375,7 @@ plot_5 <- ggplot(plot_state_SA, aes(x = reshist_state_so_factor_at10, y = sui.pr
             face = "bold") +
   annotate("segment", x = 1, xend = 2, y = 18.1, yend = 18.1, size = 0.2)
 
-# ggsave("../plots/SA_state.png", width = 5, height = 4, dpi = 320)
+ggsave("../plots/SA_state.png", width = 5, height = 4, dpi = 620)
 ```
 
 ## Individual
@@ -375,6 +383,7 @@ plot_5 <- ggplot(plot_state_SA, aes(x = reshist_state_so_factor_at10, y = sui.pr
 p1_dim_SA <- chisq.test(with(data_wide %>% filter(LGBT_inclusive_ever == 0), table(SA_y_ever, dim_yesno_q3_ever)))$p.value
 p2_dim_SA <- chisq.test(with(data_wide %>% filter(LGBT_inclusive_ever == 1), table(SA_y_ever, dim_yesno_q3_ever)))$p.value
 p_dim_SA_adj <- round(p.adjust(c(p1_dim_SA, p2_dim_SA), method = "fdr"), 5)
+round(c(p1_dim_SA, p2_dim_SA), 3)
 ```
 
 ```{r}
@@ -411,23 +420,23 @@ plot_6 <- ggplot(plot_dim_SA, aes(x = dim_yesno_q3_ever, y = sui.prop, fill = di
   facet_wrap(~ LGBT_inclusive_ever, nrow = 1) +
   geom_errorbar(aes(ymin = sui.prop - CI, ymax = sui.prop + CI), position = position_dodge(0.9), width = 0.2, size = 0.2) +
   xlab("") + ylab("") +
-  labs(tag = "F.") +
+  # labs(tag = "F.") +
   ggtitle("Suicide Attempt") +
   scale_y_continuous(labels = function(x) paste0(x, "%"), breaks = c(0,5,10,15,20), limits = c(0,20)) +
   theme(plot.title = element_text(hjust = 0.5), panel.grid.major.x = element_blank()) +
   theme(axis.text.x = element_blank(),
-        axis.text.y = element_text(size = 6),
-        axis.title.y = element_text(size = 5),
+        axis.text.y = element_text(size = 7),
+        axis.title.y = element_text(size = 8),
         axis.title.x = element_blank(),
-        plot.title = element_text(size = 5.5, hjust = 0.5, colour = "black", face = "bold"),
-        strip.text = element_text(size = 5.5, color = "dark green", face = "bold"),
+        plot.title = element_text(size = 8.5, hjust = 0.5, colour = "black", face = "bold"),
+        strip.text = element_text(size = 6.5, color = "dark green", face = "bold"),
         axis.ticks.x = element_blank(),
         axis.ticks=element_line(size=0.2),
         legend.position = "top",
-        legend.title = element_text(size = 6),
-        legend.text = element_text(size = 6),
+        legend.title = element_text(size = 8, face = "bold"),
+        legend.text = element_text(size = 6.5, face = "bold"),
         aspect.ratio = 1/0.4,
-        plot.tag = element_text(size = 9),
+        plot.tag = element_text(size = 14),
         plot.tag.position = c(0.05, 0.95)) +
   scale_fill_manual("Individual experience of        \n         discrimination        \n         against SGM", values = c("Yes" = "#E6AB02", "No" = "#1B9E77")) +
   geom_text(data    = text_label_dim_SA,
@@ -436,7 +445,7 @@ plot_6 <- ggplot(plot_dim_SA, aes(x = dim_yesno_q3_ever, y = sui.prop, fill = di
             face = "bold") +
   annotate("segment", x = 1, xend = 2, y = 18.6, yend = 18.6, size = 0.2)
 
-# ggsave("../plots/SA_individual.png", width = 5, height = 4, dpi = 320)
+ggsave("../plots/SA_individual.png", width = 5, height = 4, dpi = 620)
 ```
 
 # Merge plots
@@ -478,6 +487,6 @@ ggarrange(
   nrow = 2
 )
 
-ggsave("../plots/interaction_plots_main.png", width = 6, height = 5, dpi = 320)
+ggsave("../plots/interaction_plots_main_101722.png", width = 6.5, height = 5, dpi = 620)
 ```
 

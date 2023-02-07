@@ -35,7 +35,7 @@ dataset_long_3tp <- dataset_long_3tp %>%
     rel_family_id, site_id_l_br, 
     age_year, parents_avg_edu, household_income,
     # peer victimization
-    cybb_phenx_harm, peq_ss_relational_victim, peq_ss_reputation_victim, peq_ss_overt_victim,
+    cybb_phenx_harm, peq_ss_relational_victim, peq_ss_reputation_victim, peq_ss_overt_victim, bully_vic,
     # individual level discrimination
     dim_yesno_q1, dim_yesno_q2, dim_yesno_q3, dim_yesno_q4,
     # diagnoses, symptoms
