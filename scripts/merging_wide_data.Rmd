@@ -31,11 +31,10 @@ dataset_long_3tp <- dataset_long_3tp %>%
     sex_br, contains("race"), ethnicity_hisp,
     # state level of bias against SGM
     contains("reshist"),
-    # reshist_state_so_factor, reshist_state_sexism_factor, reshist_state_racism_factor, reshist_state_immigrant_factor,
     rel_family_id, site_id_l_br, 
     age_year, parents_avg_edu, household_income,
     # peer victimization
-    cybb_phenx_harm, peq_ss_relational_victim, peq_ss_reputation_victim, peq_ss_overt_victim, bully_vic,
+    cybb_phenx_harm, bully_vic, #peq_ss_relational_victim, peq_ss_reputation_victim, peq_ss_overt_victim, 
     # individual level discrimination
     dim_yesno_q1, dim_yesno_q2, dim_yesno_q3, dim_yesno_q4,
     # diagnoses, symptoms
@@ -70,8 +69,8 @@ data_long_2tp <- data_long_2tp %>%
                      TRUE ~ NA_real_))
 
 data_wide_2tp <- data_long_2tp %>% 
-  dplyr::select(contains(c("src", "reshist_state_so_factor")), LGBT_inclusive, bpm_y_scr_totalprob_r, cbcl_scr_syn_totprob_t,
-                bpm_y_scr_totalprob_t, cbcl_scr_syn_totprob_t, SA_y, SI_y, dim_yesno_q3, eventname) %>%
+  dplyr::select(contains(c("src", "reshist_state_so_factor")), LGBT_inclusive, bpm_y_scr_totalprob_r, cbcl_scr_syn_totprob_t, cbcl_scr_syn_totprob_r,
+                bpm_y_scr_totalprob_t, SA_y, SI_y, dim_yesno_q3, eventname) %>%
   pivot_wider(., names_from = eventname, values_from = LGBT_inclusive:dim_yesno_q3)
 
 # Recreate ever variables as it's different from wide data at 3 timepoints
