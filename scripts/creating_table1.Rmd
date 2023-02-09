@@ -56,6 +56,7 @@ vars_main_factor <- dataset_wide %>%
 ```
 
 ``` {r}
+# Table 1
 write.csv(print(
   CreateTableOne(
     data = dataset_wide,
@@ -66,7 +67,9 @@ write.csv(print(
     addOverall = T
   ),
   missing = T,
-  pDigits = 5
+  pDigits = 5,
+  contDigits = 1,
+  catDigits = 1
 ),
 "../outputs/table1_main_0207232.csv")
 
@@ -86,8 +89,8 @@ p_values <- p_values %>%
 writexl::write_xlsx(p_values, "../outputs/table1_main_adjp_020723.xlsx")
 ```
 
-# Table S1
 ```{r}
+# Table S1
 dataset_long <- read.csv("../outputs/dataset_SGM_3tp.csv")
 dataset_long <- dataset_long %>% filter(src_subject_id %in% dataset_wide$src_subject_id)
 dataset_long$eventname <- factor(dataset_long$eventname, c("bl", "1", "2"))
@@ -99,6 +102,3 @@ CreateTableOne(
     includeNA = T
   )
 ```
-
-
-
