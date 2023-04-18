@@ -25,13 +25,13 @@ mhy[,bully_aggs:= peq_ss_relational_aggs+peq_ss_reputation_aggs+peq_ss_overt_agg
 ################### Youth Summary Scores BPM and POA ################### 
 yssbpm01 = load_instrument("abcd_yssbpm01", abcd_files_path)
 yssbpm01 = yssbpm01[, grepl("src|interv|event|sex|prob_(t|r)$", colnames(yssbpm01))]
-yssbpm01 = yssbpm01[yssbpm01$eventname %in% c("2_year_follow_up_y_arm_1", "1_year_follow_up_y_arm_1"), ]
+# yssbpm01 = yssbpm01[yssbpm01$eventname %in% c("2_year_follow_up_y_arm_1", "1_year_follow_up_y_arm_1"), ]
 
 
 
 psychopathology_sum_scores = merge(cbcls_t_score, mhy)
-psychopathology_sum_scores = merge(psychopathology_sum_scores, yssbpm01, all = T)
+psychopathology_sum_scores = merge(psychopathology_sum_scores, yssbpm01, all.x = T)
 
 
-write.csv(file = "outputs/psychopathology_sum_scores.csv",x = psychopathology_sum_scores, row.names = F, na = "")
+write.csv(file = "data/psychopathology_sum_scores.csv",x = psychopathology_sum_scores, row.names = F, na = "")
 

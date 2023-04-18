@@ -21,18 +21,19 @@ source("../utility_fun.R")
 
 # Read data
 ```{r}
-dataset_wide <- read.csv("../outputs/dataset_SGM_wide_3tp.csv")
+dataset_wide <- read.csv("../data/dataset_SGM_wide_3tp.csv")
 ```
 
 # Ever: at any of 3 time points (baseline, 1y and 2y)
 ```{r}
+dataset_wide <- create_ever_var(data = dataset_wide, search_term = "sex_orient_bin_inclusive_", new_col_name = "sex_orient_bin_inclusive_ever")
 dataset_wide <- create_ever_var(data = dataset_wide, search_term = "LGBT_inclusive_", new_col_name = "LGBT_inclusive_ever")
 dataset_wide <- create_ever_var(data = dataset_wide, search_term = "dim_yesno_q1_", new_col_name = "dim_yesno_q1_ever")
 dataset_wide <- create_ever_var(data = dataset_wide, search_term = "dim_yesno_q2_", new_col_name = "dim_yesno_q2_ever")
 dataset_wide <- create_ever_var(data = dataset_wide, search_term = "dim_yesno_q3_", new_col_name = "dim_yesno_q3_ever")
 dataset_wide <- create_ever_var(data = dataset_wide, search_term = "dim_yesno_q4_", new_col_name = "dim_yesno_q4_ever")
-dataset_wide$SA_y_ever <- apply(dataset_wide[,grepl("SA_y", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
-dataset_wide$SI_y_ever <- apply(dataset_wide[,grepl("SI_y", colnames(dataset_wide))],1 ,function(x) {any(x == 1)*1})
+dataset_wide$SA_y_ever <- apply(dataset_wide[, grepl("SA_y", colnames(dataset_wide))], 1, function(x) {any(x == 1)*1})
+dataset_wide$SI_y_ever <- apply(dataset_wide[, grepl("SI_y", colnames(dataset_wide))], 1, function(x) {any(x == 1)*1})
 ```
 
 ```{r}
@@ -42,14 +43,15 @@ dataset_wide$bpm_y_scr_totalprob_t_mean <- rowMeans(dataset_wide[,which(grepl("b
 dataset_wide$cbcl_scr_syn_totprob_r_mean <- rowMeans(dataset_wide[,which(grepl("cbcl_scr_syn_totprob_r", colnames(dataset_wide)))], na.rm = T)
 dataset_wide$cbcl_scr_syn_totprob_t_mean <- rowMeans(dataset_wide[,which(grepl("cbcl_scr_syn_totprob_t", colnames(dataset_wide)))], na.rm = T)
 
-dataset_wide <- dataset_wide %>% filter(!is.na(LGBT_inclusive_ever))
+# dataset_wide <- dataset_wide %>% filter(!is.na(LGBT_inclusive_ever))
+dataset_wide <- dataset_wide %>% filter(!is.na(sex_orient_bin_inclusive_ever))
 ```
 
 # Table 1
 ```{r}
 # Main table 1
 vars_main <- dataset_wide %>% 
-  dplyr::select(matches(c("age_year_2", "sex_", "race_[wban]", "ethnicity", "income_2", "q3_e", "so_fac", "q[124]_e", "harm_2", "bully", "t_mean", "S[IA]_y_ever"))) %>% names() #"victim_2", "race_[wbanom], "_perc$", 
+  dplyr::select(matches(c("age_year_2", "sex_br", "race_[wban]", "ethnicity", "income_2", "q3_e", "so_fac", "q[124]_e", "harm_2", "bully", "t_mean", "S[IA]_y_ever"))) %>% names() #"victim_2", "race_[wbanom], "_perc$", 
 
 vars_main_factor <- dataset_wide %>% 
   dplyr::select(matches(c("sex_", "race_[wban]", "ethnicity", "q[1-4]_e", "harm_2", "S[IA]_y_ever"))) %>% names()
@@ -61,7 +63,8 @@ write.csv(print(
   CreateTableOne(
     data = dataset_wide,
     vars = vars_main,
-    strata = "LGBT_inclusive_ever",
+    # strata = "LGBT_inclusive_ever",
+    strata = "sex_orient_bin_inclusive_ever",
     factorVars = vars_main_factor,
     includeNA = T,
     addOverall = T
@@ -71,7 +74,7 @@ write.csv(print(
   contDigits = 1,
   catDigits = 1
 ),
-"../outputs/table1_main_0207232.csv")
+"../outputs/table1_main_041723.csv")
 
 # Get number of missing values (N) for each variable (% is from CreateTableOne function)
 print(questionr::freq.na(data = dataset_wide, vars_main))
@@ -81,24 +84,28 @@ print(questionr::freq.na(data = dataset_wide, vars_main))
 # Calculate adjusted p-values
 # Sheet 2: p-values from CreateTableOne
 
-p_values <- "../outputs/table1_main_0207232.xlsx" %>% read_excel(sheet = 2)
+p_values <- "../outputs/table1_main_041723.xlsx" %>% read_excel(sheet = 2)
 
 p_values <- p_values %>%
-  mutate(adj_p = round(p.adjust(p, method = "fdr", ), 3))
+  mutate(adj_p = round(p.adjust(p, method = "fdr"), 3))
 
-writexl::write_xlsx(p_values, "../outputs/table1_main_adjp_020723.xlsx")
+writexl::write_xlsx(p_values, "../outputs/table1_main_adjp_041723.xlsx")
 ```
 
 ```{r}
 # Table S1
-dataset_long <- read.csv("../outputs/dataset_SGM_3tp.csv")
+dataset_long <- read.csv("../data/dataset_SGM_3tp.csv")
 dataset_long <- dataset_long %>% filter(src_subject_id %in% dataset_wide$src_subject_id)
 dataset_long$eventname <- factor(dataset_long$eventname, c("bl", "1", "2"))
+
+write.csv(print(
 CreateTableOne(
     data = dataset_long,
-    vars = c("age_year", "kbi_y_sex_orient", "kbi_y_trans_id", "LGBT_inclusive"),
+    vars = c("age_year", "kbi_y_sex_orient"), #"kbi_y_sex_orient", "kbi_y_trans_id", "LGBT_inclusive", "sex_orient_bin_inclusive"
     strata = "eventname",
-    factorVars = c("kbi_y_sex_orient", "kbi_y_trans_id", "LGBT_inclusive"),
+    factorVars = c("kbi_y_sex_orient"), #"kbi_y_sex_orient", "kbi_y_trans_id", "LGBT_inclusive",  "sex_orient_bin_inclusive"
     includeNA = T
-  )
+  )),
+  "../outputs/tableS1_041723.csv")
+
 ```

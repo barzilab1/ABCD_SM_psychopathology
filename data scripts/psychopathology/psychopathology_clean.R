@@ -26,5 +26,5 @@ yksad01$sex_orient_bin_inclusive = ifelse(yksad01$kbi_y_sex_orient <= 2, 1, 0)
 
 
 
-write.csv(file = "outputs/psychopathology.csv",x = yksad01, row.names = F, na = "")
+write.csv(file = "data/psychopathology.csv",x = yksad01, row.names = F, na = "")
 

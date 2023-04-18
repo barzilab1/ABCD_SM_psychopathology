@@ -1,31 +1,34 @@
 library(readr)
 library(dplyr)
 library(modelr)
+library(lubridate)
 
 
-family <- read_csv("outputs/family.csv")
-site <- read_csv("outputs/site.csv")
-exposome_set <- read.csv("outputs/exposome_set.csv")
-geo_data <- read_csv("outputs/geo_data.csv")
-psychopathology <- read_csv("outputs/psychopathology.csv")
-psychopathology_sum <- read_csv("outputs/psychopathology_sum_scores.csv")
-suicide_set <- read_csv("outputs/suicide_set.csv")
-demographics_baseline <- read.csv("outputs/demographics_baseline.csv")
-demographics_long <- read.csv("outputs/demographics_long.csv")
+family <- read_csv("data/family.csv") %>% 
+  mutate(interview_date = mdy(interview_date))
+site <- read_csv("data/site.csv") %>% 
+  mutate(interview_date = mdy(interview_date))
+exposome_set <- read.csv("data/exposome_set.csv") %>% 
+  mutate(interview_date = mdy(interview_date))
+geo_data <- read_csv("data/geo_data.csv") %>% 
+  mutate(interview_date = mdy(interview_date))
+psychopathology <- read_csv("data/psychopathology.csv") %>% 
+  mutate(interview_date = mdy(interview_date))
+psychopathology_sum <- read_csv("data/psychopathology_sum_scores.csv") %>% 
+  mutate(interview_date = mdy(interview_date))
+suicide_set <- read_csv("data/suicide_set.csv") %>% 
+  mutate(interview_date = ymd(interview_date))
+demographics_all <- read_csv("data/demographics_all.csv")
+demo_race <- read_csv("data/demo_race.csv")
 
-# combine the demographics to one dataset
-demo_race = demographics_baseline[, grep("src|race|hisp", colnames(demographics_baseline))]
-
-demographics_long = merge(demographics_long, demo_race)
-demographics_long = demographics_long[demographics_long$eventname != "baseline_year_1_arm_1",]
-demographics = bind_rows(demographics_baseline, demographics_long)
-
+demographics <- merge(demographics_all, demo_race) %>% 
+  mutate(interview_date = mdy(interview_date))
 
 dataset <- merge(exposome_set, psychopathology, all = T)
-dataset <- merge(dataset, psychopathology_sum, all = T)
+dataset <- merge(dataset, psychopathology_sum, all.x = T)
 dataset <- merge(dataset, suicide_set, all = T)
 dataset <- merge(dataset, site, all = T)
-dataset <- merge(dataset, demographics, all =T )
+dataset <- merge(dataset, demographics, all =T)
 
 dataset <- dataset[!dataset$eventname %in% c("3_year_follow_up_y_arm_1"),]
 
@@ -41,7 +44,7 @@ dataset <- dataset %>%
                             baseline_year_1_arm_1 = "bl"),
          age_year = age/12) 
 
-write.csv(file = "outputs/dataset_SGM_3tp.csv", x = dataset, row.names = F, na = "")
+write.csv(file = "data/dataset_SGM_3tp.csv", x = dataset, row.names = F, na = "")
 
 # Create data for mixed models (at 1-year and 2-year follow-up)
 dataset_long <- dataset[dataset$eventname %in% c("1","2"),]
@@ -63,7 +66,7 @@ dataset_long <- add_residuals(data = dataset_long,
                               model = lm(scale(household_income) ~ reshist_addr1_adi_perc, data = dataset_long),
                               var = "income_resid")
 
-write.csv(file = "outputs/dataset_SGM_long_mm.csv", x = dataset_long, row.names = F, na = "")
+write.csv(file = "data/dataset_SGM_long_mm.csv", x = dataset_long, row.names = F, na = "")
 
 
 

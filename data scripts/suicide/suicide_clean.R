@@ -29,4 +29,4 @@ ksad_y$SA_y = (ksad_y$SA_current_y == 1 | ksad_y$SA_past_y == 1)*1
 suicide_set = ksad_y[,grepl("src|inter|event|sex|SI|SA", colnames(ksad_y))]
 
 
-write.csv(file = "outputs/suicide_set.csv",x = suicide_set, row.names = F, na = "")
+write.csv(file = "data/suicide_set.csv",x = suicide_set, row.names = F, na = "")

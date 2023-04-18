@@ -32,8 +32,8 @@ exposome_set = merge(ydmes01,cb, all = T)
 exposome_set = merge(exposome_set,lpksad01, all = T)
 
 
-write.csv(file = "outputs/exposome_set.csv",x = exposome_set, row.names=F, na = "")
-write.csv(file = "outputs/family.csv",x = acspsw03, row.names=F, na = "")
+write.csv(file = "data/exposome_set.csv",x = exposome_set, row.names=F, na = "")
+write.csv(file = "data/family.csv",x = acspsw03, row.names=F, na = "")
 
 
 
