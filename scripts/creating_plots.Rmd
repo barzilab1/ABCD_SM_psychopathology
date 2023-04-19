@@ -1,26 +1,22 @@
 ---
-title: "Untitled"
+title: "Create interaction plot"
 author: "Kate Tran"
-date: "6/6/2022"
+date: "4/18/2022"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
 # Library
 ```{r}
 library(dplyr)
 library(readr)
 library(ggplot2)
-# library(tidyr)
 library(ggpubr)
-library(gridExtra)
-library(grid)
-# library(RVAideMemoire)
-# library(scales)                                                                                                                               
-library(sjmisc)
 library(ggeffects)
+library(sjlabelled)
 ```
 
 # Create data
@@ -28,6 +24,16 @@ library(ggeffects)
 data_wide <- read_csv("../data/dataset_SGM_wide_2tp.csv")
 data_wide <- data_wide %>% 
   mutate(reshist_state_so_factor = reshist_state_so_factor)
+
+
+data_wide <- data_wide %>% set_labels(dim_yesno_q3_ever, labels = c("Interpersonal SM discrimination - No", "Interpersonal SM discrimination - Yes"))
+data_wide <- data_wide %>% set_labels(sex_orient_bin_inclusive_ever, labels = c("No", "Yes"))
+
+data_wide <- data_wide %>% 
+  select(SA_y_ever, SI_y_ever, dim_yesno_q3_ever, reshist_state_so_factor, sex_orient_bin_inclusive_ever,
+         bpm_y_scr_totalprob_t_mean) %>% 
+  set_label(c("Suicide attempt", "Suicide ideation", "Interpersonal SM discrimination", "Structural sexual minority stigma", "Sexual minority identity",
+              "Self-reported psychopathology (BPM)"))
 ```
 
 # Figure 1 # Two way interaction
@@ -35,39 +41,59 @@ data_wide <- data_wide %>%
 # BPM # state
 bpm_state_fit <- lm(bpm_y_scr_totalprob_t_mean ~ sex_orient_bin_inclusive_ever*reshist_state_so_factor, data = data_wide)
 bpm_state_df <- ggpredict(bpm_state_fit, terms = c("reshist_state_so_factor", "sex_orient_bin_inclusive_ever"))
-plot1 <- ggplot(bpm_state_df, aes(x, predicted, colour = group)) + 
-  geom_line()
+
+plot1 <- plot(bpm_state_df) +
+  labs(x = "",
+       y = get_y_title(bpm_state_df),
+       title = "",
+       colour = get_legend_title(bpm_state_df)
+  ) +
+  scale_colour_brewer(palette = "Set1", labels = c("No", "Yes")) +
+  theme_bw() +
+  theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.title.x = element_text(size = 10),
+        strip.text = element_text(size = 8.5, face = "bold"),
+        axis.ticks=element_line(size=0.5))
 
 # SI # state
 SI_state_fit <- glm(SI_y_ever ~ sex_orient_bin_inclusive_ever*reshist_state_so_factor, data = data_wide, family = "binomial")
 SI_state_df <- ggpredict(SI_state_fit, terms = c("reshist_state_so_factor", "sex_orient_bin_inclusive_ever"))
-plot2 <- ggplot(SI_state_df, aes(x, predicted, colour = group)) + 
-  geom_line()
+
+plot2 <- plot(SI_state_df) + 
+  labs(x = "",
+       y = "Probability of suicide ideation",
+       title = "",
+       colour = get_legend_title(SI_state_df)
+  ) +
+  scale_colour_brewer(palette = "Set1", labels = c("No", "Yes")) +
+  theme_bw() +
+  theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.title.x = element_text(size = 10),
+        strip.text = element_text(size = 8.5, face = "bold"),
+        axis.ticks=element_line(size=0.5))
 
 # SA # state
 SA_state_fit <- glm(SA_y_ever ~ sex_orient_bin_inclusive_ever*reshist_state_so_factor, data = data_wide, family = "binomial")
 SA_state_df <- ggpredict(SA_state_fit, terms = c("reshist_state_so_factor", "sex_orient_bin_inclusive_ever"))
-plot3 <- ggplot(SA_state_df, aes(x, predicted, colour = group)) + 
-  geom_line()
 
-
-# BPM # individual
-bpm_indi_fit <- lm(bpm_y_scr_totalprob_t_mean ~ dim_yesno_q3_ever*reshist_state_so_factor, data = data_wide)
-bpm_indi_df <- ggpredict(bpm_indi_fit, terms = c("reshist_state_so_factor", "dim_yesno_q3_ever"))
-plot4 <- ggplot(bpm_indi_df, aes(x, predicted, colour = group)) + 
-  geom_line()
-
-# SI # individual
-SI_indi_fit <- glm(SI_y_ever ~ dim_yesno_q3_ever*reshist_state_so_factor, data = data_wide, family = "binomial")
-SI_indi_df <- ggpredict(SI_indi_fit, terms = c("reshist_state_so_factor", "dim_yesno_q3_ever"))
-plot5 <- ggplot(SI_indi_df, aes(x, predicted, colour = group)) + 
-  geom_line()
-
-# SA # individual
-SA_indi_fit <- glm(SA_y_ever ~ dim_yesno_q3_ever*reshist_state_so_factor, data = data_wide, family = "binomial")
-SA_indi_df <- ggpredict(SA_indi_fit, terms = c("reshist_state_so_factor", "dim_yesno_q3_ever"))
-plot6 <- ggplot(SA_indi_df, aes(x, predicted, colour = group)) + 
-  geom_line()
+plot3 <- plot(SA_state_df) + 
+  labs(x = "",
+       y = "Probability of suicide attempt",
+       title = "",
+       colour = get_legend_title(SA_state_df)
+  ) +
+  scale_colour_brewer(palette = "Set1", labels = c("No", "Yes")) +
+  theme_bw() +
+  theme(axis.text.x = element_text(size = 10),
+        axis.text.y = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.title.x = element_text(size = 10),
+        strip.text = element_text(size = 8.5, face = "bold"),
+        axis.ticks=element_line(size=0.5))
 ```
 
 ```{r}
@@ -80,83 +106,48 @@ ggarrange(
     theme(plot.margin = margin(r = 1, l = 1)), 
   NULL,
   plot3 + 
-    theme(plot.margin = margin(l = 1),
-    ), 
+    theme(plot.margin = margin(l = 1)), 
   nrow = 1,
   widths = c(1, 0.05, 1, 0.05, 1),
   heights = c(5,5,5,5,5),
   common.legend = T,
-  legend = "right"),
-  
-  ggarrange(
-  plot4 +
-    theme(plot.margin = margin(r = 1, l = 1)),
-  NULL,
-  plot5 + 
-    theme(plot.margin = margin(r = 1, l = 1)), 
-  NULL,
-  plot6 + 
-    theme(plot.margin = margin(l = 1),
-    ), 
-  nrow = 1,
-  widths = c(1, 0.05, 1, 0.05, 1),
-  heights = c(5,5,5,5,5),
-  common.legend = T,
-  legend = "right"),
-  
-  nrow = 2
+  legend = "right")
 )
+
+ggsave("../plots/interaction_plots_top_041923.png", width = 8, height = 4, dpi = 620)
 ```
 
 # Three-way interaction
 ```{r}
 fit <- glm(SA_y_ever ~ dim_yesno_q3_ever*reshist_state_so_factor*sex_orient_bin_inclusive_ever, data = data_wide, family = "binomial")
-mydf <- ggpredict(fit, terms = c("reshist_state_so_factor", "dim_yesno_q3_ever", "sex_orient_bin_inclusive_ever"))
-ggplot(mydf, aes(x, predicted, colour = group)) + 
-  geom_line() +
-  facet_wrap(~facet) # this is for 3-way interaction
+mydf <- ggpredict(fit, terms = c("reshist_state_so_factor", "sex_orient_bin_inclusive_ever", "dim_yesno_q3_ever"))
+  
+plot(mydf) + 
+  labs(x = get_x_title(mydf),
+       y = "Probability of suicide attempt",
+       title = "",
+       colour = get_legend_title(mydf)
+  ) +
+  scale_colour_brewer(palette = "Set1", labels = c("No", "Yes")) +
+  theme_bw() +
+  theme(axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        axis.title.y = element_text(size = 12),
+        axis.title.x = element_text(size = 12),
+        strip.text = element_text(size = 8.5, face = "bold"),
+        axis.ticks=element_line(size=0.5),
+        legend.title = element_text(size = 13, face = "bold"),
+        legend.text = element_text(size = 13, face = "bold"))
+# "group": the grouping level from the second term in terms, used as grouping-aesthetics in plots.
+# "facet": the grouping level from the third term in terms, used to indicate facets in plots.
+
+# footnote: model, y is predicted from lm() function #
+ggsave("../plots/interaction_plots_bottom_041923.png", width = 8, height = 4, dpi = 620)
+
 ```
 
 
-# Merge plots
 
-```{r}
-ggarrange(
-  ggarrange(
-  plot_1 +
-    theme(plot.margin = margin(r = 1, l = 1)),
-  NULL,
-  plot_3 + 
-    theme(plot.margin = margin(r = 1, l = 1)), 
-  NULL,
-  plot_5 + 
-    theme(plot.margin = margin(l = 1),
-    ), 
-  nrow = 1,
-  widths = c(1, 0.05, 1, 0.05, 1),
-  heights = c(5,5,5,5,5),
-  common.legend = T,
-  legend = "right"),
-  
-  ggarrange(
-  plot_2 +
-    theme(plot.margin = margin(r = 1, l = 1)),
-  NULL,
-  plot_4 + 
-    theme(plot.margin = margin(r = 1, l = 1)), 
-  NULL,
-  plot_6 + 
-    theme(plot.margin = margin(l = 1),
-    ), 
-  nrow = 1,
-  widths = c(1, 0.05, 1, 0.05, 1),
-  heights = c(5,5,5,5,5),
-  common.legend = T,
-  legend = "right"),
-  
-  nrow = 2
-)
 
-ggsave("../plots/interaction_plots_main_101722.png", width = 6.5, height = 5, dpi = 620)
-```
+
 
