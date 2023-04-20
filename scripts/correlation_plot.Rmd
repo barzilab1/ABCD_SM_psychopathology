@@ -18,7 +18,8 @@ source("../utility_fun.R")
 ```
 
 ```{r}
-data_long <- read.csv("../outputs/dataset_SGM_long_mm.csv")
+data_long <- read.csv("../data/dataset_SGM_long_mm.csv")
+getwd()
 ```
 
 # Correlation at 1 year and 2 year
@@ -32,12 +33,12 @@ vars_1y <-
     `Black race` = race_black,
     `Hispanic ethinicity` = ethnicity_hisp,
     `household income` = income_resid,
-    SGM = LGBT_inclusive,
-    `discrimination - sexual orientation` = dim_yesno_q3,
-    `structural bias against SGM` = reshist_state_so_factor,
-    `discrimination - race` = dim_yesno_q1,
-    `discrimination - country` = dim_yesno_q2,
-    `discrimination - weight` = dim_yesno_q4,
+    SM = sex_orient_bin_inclusive,
+    `interpersonal SM discrimination` = dim_yesno_q3,
+    `structural SM stigma` = reshist_state_so_factor,
+    `interpersonal race discrimination` = dim_yesno_q1,
+    `interpersonal country discrimination` = dim_yesno_q2,
+    `interpersonal weight discrimination` = dim_yesno_q4,
     ADI = reshist_addr1_adi_perc
   )
 
@@ -50,18 +51,20 @@ vars_2y <-
     `Black race` = race_black,
     `Hispanic ethinicity` = ethnicity_hisp,
     `household income` = income_resid,
-    SGM = LGBT_inclusive,
-    `discrimination - sexual orientation` = dim_yesno_q3,
-    `structural bias against SGM` = reshist_state_so_factor,
-    `discrimination - race` = dim_yesno_q1,
-    `discrimination - country` = dim_yesno_q2,
-    `discrimination - weight` = dim_yesno_q4,
+    SM = sex_orient_bin_inclusive,
+    `target of cyberbullying` = cybb_phenx_harm,
+    `bullying victimization` = bully_vic,
+    `interpersonal SM discrimination` = dim_yesno_q3,
+    `structural SM stigma` = reshist_state_so_factor,
+    `interpersonal race discrimination` = dim_yesno_q1,
+    `interpersonal country discriminatio` = dim_yesno_q2,
+    `interpersonal weight discrimination` = dim_yesno_q4,
     ADI = reshist_addr1_adi_perc
   )
 ```
 
 ```{r}
-png("../plots/correlation_combined.png", units="in", width=6, height=3, res=320)
+png("../plots/correlation_combined.png", units="in", width=6, height=3, res=920)
 par(mar = c(0.01, 0.01, 0.01, 0.01))
 layout.matrix <- matrix(c(1,2,3,4,5,6), nrow = 2, ncol = 3, byrow = T)
 
