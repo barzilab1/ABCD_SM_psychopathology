@@ -122,7 +122,7 @@ totaleffect := c + a1*b1
 
 med_mod_SA_1Ms_long_addcov <- sem(mod_SA_1Ms_long_addcov, data = dataset_wide, se = "bootstrap", bootstrap = 500)
 
-standardizedSolution(med_mod_SA_1Ms_long_addcov, type = "std.all") %>% htmlTable::htmlTable()
+standardizedSolution(med_mod_SA_1Ms_long_addcov, type = "std.all")
 
 plot_mod_SA_1Ms_long_addcov <- lavaanPlot(
   model = med_mod_SA_1Ms_long_addcov,
