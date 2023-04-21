@@ -57,7 +57,7 @@ vars_2y <-
     `interpersonal SM discrimination` = dim_yesno_q3,
     `structural SM stigma` = reshist_state_so_factor,
     `interpersonal race discrimination` = dim_yesno_q1,
-    `interpersonal country discriminatio` = dim_yesno_q2,
+    `interpersonal country discrimination` = dim_yesno_q2,
     `interpersonal weight discrimination` = dim_yesno_q4,
     ADI = reshist_addr1_adi_perc
   )

@@ -27,7 +27,7 @@ dataset_wide <- read.csv("../data/dataset_SGM_wide_3tp.csv")
 # Ever: at any of 3 time points (baseline, 1y and 2y)
 ```{r}
 dataset_wide <- create_ever_var(data = dataset_wide, search_term = "sex_orient_bin_inclusive_", new_col_name = "sex_orient_bin_inclusive_ever")
-dataset_wide <- create_ever_var(data = dataset_wide, search_term = "LGBT_inclusive_", new_col_name = "LGBT_inclusive_ever")
+# dataset_wide <- create_ever_var(data = dataset_wide, search_term = "LGBT_inclusive_", new_col_name = "LGBT_inclusive_ever")
 dataset_wide <- create_ever_var(data = dataset_wide, search_term = "dim_yesno_q1_", new_col_name = "dim_yesno_q1_ever")
 dataset_wide <- create_ever_var(data = dataset_wide, search_term = "dim_yesno_q2_", new_col_name = "dim_yesno_q2_ever")
 dataset_wide <- create_ever_var(data = dataset_wide, search_term = "dim_yesno_q3_", new_col_name = "dim_yesno_q3_ever")
