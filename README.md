@@ -29,4 +29,4 @@ In the demographics folder, the script [organize_demographics.R](data scripts/or
 5. Run the [correlation_plot.Rmd](scripts/correlation_plot.Rmd) to generate correlation plot.
 5. Run the [creating_plots.Rmd](scripts/creating_plots.Rmd) to generate plots.
 6. Run the [mixed_models.Rmd](scripts/mixed_models.Rmd) for mixed models.
-7. Run the [mediation.Rmd](scripts/mediation.Rmd) for mediation analyses.
+7. Run the [mediation.Rmd](scripts/mediation.Rmd) for mediation analyses. 
