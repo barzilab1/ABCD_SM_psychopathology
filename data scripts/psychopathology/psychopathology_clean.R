@@ -19,11 +19,20 @@ yksad01$LGBT_inclusive = ifelse( (is.na(yksad01$LGBT_inclusive) & (yksad01$kbi_y
                        0, yksad01$LGBT_inclusive)
 
 # sex_orient_bin: Yes to “Are you gay or bisexual?”
-yksad01$sex_orient_bin = ifelse(yksad01$kbi_y_sex_orient == 1, 1, 0)
+# yksad01$sex_orient_bin = ifelse(yksad01$kbi_y_sex_orient == 1, 1, 0)
+
+yksad01$sex_orient_bin = yksad01$kbi_y_sex_orient
+yksad01$sex_orient_bin[yksad01$sex_orient_bin == 4] <- NA
+yksad01$sex_orient_bin[yksad01$sex_orient_bin == 2|yksad01$sex_orient_bin==3] <- 0 
+
 
 # sex_orient_bin_inclusive: Yes/Maybe to “Are you gay or bisexual?”
-yksad01$sex_orient_bin_inclusive = ifelse(yksad01$kbi_y_sex_orient <= 2, 1, 0)
+# yksad01$sex_orient_bin_inclusive = ifelse(yksad01$kbi_y_sex_orient <= 2, 1, 0)
 
+yksad01$sex_orient_bin_inclusive = yksad01$kbi_y_sex_orient
+yksad01$sex_orient_bin_inclusive[yksad01$sex_orient_bin_inclusive == 4] <- NA
+yksad01$sex_orient_bin_inclusive[yksad01$sex_orient_bin_inclusive == 1|yksad01$sex_orient_bin_inclusive==2] <- 1
+yksad01$sex_orient_bin_inclusive[yksad01$sex_orient_bin_inclusive == 3] <- 0
 
 
 write.csv(file = "data/psychopathology.csv",x = yksad01, row.names = F, na = "")
