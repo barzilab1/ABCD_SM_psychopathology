@@ -23,7 +23,7 @@
 
 1. update the [config.R](config.R) to reflect the location of the instruments above.
 2. In the "data scripts"" folder, run scripts in any order. These scripts go over the abcd instruments and create new variables and datasets that are placed in the “data” folder.
-In the demographics folder, the script [organize_demographics.R](data scripts/demographics/organize_demographics.R) should be run after the other two scripts.
+In the demographics folder, the script [organize_demographics.R](demographics/organize_demographics.R) should be run after the other two scripts.
 3. Run the [merging.R](scripts/merging.R) and [merging_wide_data.Rmd](scripts/merging_wide_data.Rmd) script to create the long and wide format dataset.
 4. Run the [creating_table1.Rmd](scripts/creating_table1.Rmd) to generate table 1 of the main paper and supplement.
 5. Run the [correlation_plot.Rmd](scripts/correlation_plot.Rmd) to generate correlation plot.
