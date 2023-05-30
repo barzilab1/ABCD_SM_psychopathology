@@ -1,5 +1,5 @@
-##########
-# ABCD_SGM
+
+## ABCD_SM_psychopathology
 
 
 #### This project uses the following ABCD instruments [version 4.0]:
